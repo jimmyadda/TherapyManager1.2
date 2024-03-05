@@ -9,8 +9,7 @@ function test(patienid){
 
   $('#myModal').show('show', function() {
     $("#doctor_select").html(doctorSelect)
-    $("#patient_select").html(patientSelect)
-    
+    $("#patient_select").html(patientSelect)    
     $("#patient_select").val(patienid);
     $(".form_datetime").datetimepicker({
       format: 'yyyy-mm-dd hh:ii:00',
@@ -19,23 +18,54 @@ function test(patienid){
   });
 
 
+  $("#closemodal").off("click").on("click", function(e) {
+    $('#myModal').hide();
+    });
+
   $("#savethepatient").off("click").on("click", function(e) {
     var instance = $('#detailform').parsley();
     instance.validate()
      if(instance.isValid()){
         jsondata = $('#detailform').serializeJSON();
         let pat_id = jsondata.pat_id;
-        addAppointment(jsondata);
-        //send mail to patient
-          
+        var res = "";
+        var available =  checkdate(jsondata).
+        then(response => 
+          {
+            console.log("response",response);
+            if(response=="OK")
+            {
+              addAppointment(jsondata);
+            }
+            else{
+              swal("Oops...", "This date is unavailable!", "error");
+            }
+          }); 
+      
         }
       
     });
 });
 
 }
+
+async function checkdate(data){
+  //Check Date 
+  let f = new FormData();
+  f.append("appointmentdate",data.appointment_date)
+  f.append("pat_id",data.pat_id)
+  console.log('checkdate')
+  const response = await fetch("/checkdate",{
+  "method": "POST",
+  "body":f,       
+  })
+  const chedatdate = await response.text();
+  return chedatdate;
+}
+
  function addAppointment(data) {
   var table;
+
   var settings = {
       "async": true,
       "crossDomain": true,
@@ -50,10 +80,8 @@ function test(patienid){
       "data": JSON.stringify(data)
   }
   $.ajax(settings).done(function (response) {
-   //$.notify("Appointment Added Successfully", {"status":"success"}, {"forever": true});
    $('#myModal').hide();
-   swal("Appointment Added Successfully!", "success");
-   
+   swal("Appointment Added Successfully!", "success");   
   });
    
 }

@@ -1,6 +1,7 @@
 #Tushar Borole
 #Python 2.7
 
+import flask_login
 from flask_restful import Resource, Api, request
 from package.model import conn
 
@@ -17,4 +18,7 @@ class Common(Resource):
         getPatientCount.update(getDoctorCount)
         getPatientCount.update(getAppointmentCount)
         return getPatientCount
-    
+
+
+
+

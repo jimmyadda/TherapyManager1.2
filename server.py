@@ -10,7 +10,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import os
 from time import sleep
-from flask import Flask, send_file,flash,render_template,request,redirect, send_from_directory, session
+from flask import Flask, abort, send_file,flash,render_template,request,redirect, send_from_directory, session
 import flask_login
 import sqlite3
 import datetime
@@ -18,6 +18,7 @@ import uuid
 import hashlib
 from werkzeug.utils import secure_filename
 from flask_restful import Resource, Api
+from package.decorators import admin_only
 from package.patient import Patients, Patient
 from package.doctor import Doctors, Doctor
 from package.appointment import Appointments, Appointment,RequestAppointments,RequestAppointment
@@ -518,11 +519,13 @@ def send_appointment(notification=''):
         server.close()
     print('Email sent!')
     return redirect(f"/appointment")
+
 #endregion
 
 #Therapy Routes
 #region Therapy Routes
 @app.route("/doctor", methods=['GET'])
+@admin_only
 def doctor_Page():
     id = request.args.get('id')
     user = flask_login.current_user.get_dict()
@@ -541,10 +544,11 @@ def patient_Page():
     return render_template('patient.html',user=user)
 
 @app.route("/appointment", methods=['GET'])
+@admin_only
 def appointment_Page():
-    id = request.args.get('id')
-    user = flask_login.current_user.get_dict()
-    return render_template('appointment.html',user=user)
+        id = request.args.get('id')
+        user = flask_login.current_user.get_dict()
+        return render_template('appointment.html',user=user)
 
 @app.route("/patientform", methods=['GET'])
 def patient_folder_Load():
@@ -631,6 +635,7 @@ def patientnotes_page():
 
 @app.route("/medicalnote" , methods=['GET'])
 @flask_login.login_required
+@admin_only
 def medicalnote_page():
     user = flask_login.current_user.get_dict()
     data = request.values
@@ -699,8 +704,8 @@ def clientlogin_request():
     print('users',users[0]['pat_id'])
     clientid= users[0]['pat_id']
     if len(users) >= 1: #user name exist, password not checked
-        user = load_user(users[0]['pat_id'])
-        print("user",user)
+        user = load_user(clientid)
+        print("user",user.get_dict())
         flask_login.login_user(user)  
         return redirect(f"/portal?patid={clientid}") 
     else: #Invalid Email 
@@ -719,11 +724,26 @@ def get_portal():
         appointment_dates["lastappointment"] = lastappointment[0]["appointment_date"]
     if nextappointment:
         appointment_dates["nextappointment"] = nextappointment[0]["appointment_date"]
-    print(patientdata)
     apps = Appointments()
     appointments = apps.getappointmentsbypatient(id)
+    session['patientdata'] = patientdata
     return render_template('portal.html',user=user,patientdata=patientdata,appointments=appointments,appointment_dates=appointment_dates,alert="")
 
+@app.route("/checkdate",methods=["POST"])
+@flask_login.login_required
+def chekappointmentdate():
+    data=  dict(request.values)
+    user = flask_login.current_user.get_dict() 
+    print(data)
+    id = data['pat_id']
+    datetocheck = data['appointmentdate']    
+    appoinmentindate = database_read(f"SELECT *  FROM appointment where appointment_date='{datetocheck}' order by appointment_date desc LIMIT 1;")
+    print("appoinmentindate",len(appoinmentindate))
+    if len(appoinmentindate) >= 1:
+       return "ERROR"             
+    else:
+        return "OK" 
+           
 #endregion
 
 

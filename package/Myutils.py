@@ -2,6 +2,10 @@
 from datetime import datetime
 from datetime import timedelta
 import json
+from functools import wraps
+import flask_login
+
+
 
 
 BASEICS = u'''
@@ -70,9 +74,9 @@ def render_ics(title, description, location, start, end, created,admin,admin_mai
             }
     return BASEICS % data
 
-if __name__ == '__main__':
-    print(dateisoformat())
 
+
+if __name__ == '__main__':
     print(render_ics(
             title=u'testcal',
             description=u'test calendar',

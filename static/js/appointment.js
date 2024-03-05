@@ -73,41 +73,6 @@ swal({
 
     }
 
-
-    function approveAppointment(id) {
-        var settings = {
-            "async": true,
-            "crossDomain": true,
-            "url": "appointmentapi/" + id,
-            "method": "DELETE",
-            "headers": {
-                "cache-control": "no-cache",
-                "postman-token": "28ea8360-5af0-1d11-e595-485a109760f2"
-            }
-        }
-
-swal({
-    title: "Are you sure?",
-    text: "You will not be able to recover this data",
-    type: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#DD6B55",
-    confirmButtonText: "Yes, delete it!",
-    closeOnConfirm: false
-}, function() {
- $.ajax(settings).done(function (response) {
-   swal("Deleted!", "Appointment has been deleted.", "success");
-            table.destroy();
-            $('#datatable4 tbody').empty(); // empty in case the columns change
-            getAppointment()
-        });
-
-
-});
-
-    }
-    
-
     function getAppointment() {
 
         var settings = {
@@ -164,13 +129,15 @@ swal({
 
     }
 
-    
+ // PENDING
+ 
+ 
     function getPendingAppointment() {
 
         var settings = {
             "async": true,
             "crossDomain": true,
-            "url": "RequestAppointments",
+            "url": "appointmentrequestapi",
             "method": "GET",
             "headers": {
                 "cache-control": "no-cache"
@@ -205,23 +172,103 @@ swal({
                     },
                     {
                         mRender: function (o) {
-                            return '<button class="btn-xs btn btn-danger delete-btn" type="button">approve</button>';
+                            return '<button class="btn-xs btn btn-success edit-btn" type="button">Approve</button>';
+                        }
+                    },
+                    {
+                        mRender: function (o) {
+                            return '<button class="btn-xs btn btn-danger delete-btn" type="button">Delete</button>';;
                         }
                     }
-        ]
-            });
-            $('#datatable4 tbody').on('click', '.delete-btn', function () {
-                var data = table.row($(this).parents('tr')).data();
-                approveAppointment(data.app_id)
+            ]
             });
 
+
+
+                        //delete
+                        $('#pendingtbl tbody').off('click').on('click', '.delete-btn', function () {
+                            var data = table.row($(this).parents('tr')).data();
+                            deleterequestAppointment(data.app_id)
+                        });
+            
+                                //approve           
+                                $('#pendingtbl tbody').off('click').on('click', '.edit-btn',function () {
+                                    var data = table.row($(this).parents('tr')).data();                
+                                    console.log(data.appointment_date);
+            
+                                    var available =  checkdate(data).
+                                    then(response => 
+                                      {
+                                        console.log("response",response);
+                                        if(response=="OK")
+                                        {
+                                          addAppointment(data);
+                                          deleteapprovedAppointment(data.app_id);
+                                        }
+                                        else{
+                                          swal("Oops...", "This date is unavailable!", "error");
+                                        }
+                                      }); 
+            
+                                });
 
         });
 
 
+
+
     }
     
+ function deleterequestAppointment(id) {
+        var settings = {
+            "async": true,
+            "crossDomain": true,
+            "url": "appointmentrequestapi/" + id,
+            "method": "DELETE",
+            "headers": {
+                "cache-control": "no-cache",
+                "postman-token": "28ea8360-5af0-1d11-e595-485a109760f2"
+            }
+        }
 
+swal({
+    title: "Are you sure?",
+    text: "You will not be able to recover this data",
+    type: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#DD6B55",
+    confirmButtonText: "Yes, delete it!",
+    closeOnConfirm: false
+}, function() {
+ $.ajax(settings).done(function (response) {
+   swal("Deleted!", "Appointment Request has been deleted.", "success");
+            table.destroy();
+            $('#pendingtbl tbody').empty(); // empty in case the columns change
+            getPendingAppointment()
+        });
+
+
+});
+
+    }
+
+
+    function deleteapprovedAppointment(id) {
+        var settings = {
+            "async": true,
+            "crossDomain": true,
+            "url": "appointmentrequestapi/" + id,
+            "method": "DELETE",
+            "headers": {
+                "cache-control": "no-cache",
+                "postman-token": "28ea8360-5af0-1d11-e595-485a109760f2"
+            }
+        }
+    $.ajax(settings).done(function (response) {                
+                $('#pendingtbl tbody').empty(); // empty in case the columns change
+                getPendingAppointment()
+            });
+    }
 
     $("#addpatient").click(function () {
 
@@ -233,7 +280,7 @@ swal({
       $(".form_datetime").datetimepicker({
          format: 'yyyy-mm-dd hh:ii:00',
          startDate:new Date(),
-        initialDate: new Date()
+         initialDate: new Date()
     });
             $("#savethepatient").off("click").on("click", function(e) {
             var instance = $('#detailform').parsley();
@@ -302,7 +349,23 @@ var patientSelect=""
                 })
         }
 
+
+        async function checkdate(data){
+            //Check Date 
+            let f = new FormData();
+            f.append("appointmentdate",data.appointment_date)
+            f.append("pat_id",data.pat_id)
+            console.log('checkdate')
+            const response = await fetch("/checkdate",{
+            "method": "POST",
+            "body":f,       
+            })
+            const chedatdate = await response.text();
+            return chedatdate;
+        }
+
 getDoctor()
 getPatient()
 getAppointment()
+getPendingAppointment()
 })
