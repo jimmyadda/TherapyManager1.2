@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width, Initial-scale=1">
+        <link rel="stylesheet" href="/static/vendor/fullcalendar/calendar.js.min.css">
+        <script src="/static/vendor/fullcalendar/calendar.js"></script>
+    </head>
+
+    <body>      
+        <div class="pageheader">
+            <div class="titlebar">
+              <a class=""  href="/appointment">תצוגת טבלה</a>
+            </div>
+        </div>
+
+        <form method="POST" action="/calendar" enctype="multipart/form-data">
+            <div id="calendar"></div>   
+        </form>
+</body>
+<script>
+  var calendarInstance1 = new calendarJs( "calendar", {
+    manualEditingEnabled: true,
+    startOfWeekDay: 6, // 6 = Sunday
+    reverseOrderDaysOfWeek: true,
+    // All your options can be set here
+  } );
+
+  //calendarInstance1.addEvent( event1 );
+   const events_data = JSON.parse('{{ appointments | tojson }}');
+ // const events_data = '{{ appointments}}'
+ events_data.forEach(function(object) {
+  console.log(object); 
+  object['title'] = "פגישת טיפול עם : " + object.pat_first_name + " "+ object.pat_last_name
+  object['from'] = object.appointment_date
+  object['to'] = object.appointment_date
+  });
+
+  calendarInstance1.addEvents(events_data);
+
+  //open full week view
+  document.getElementsByClassName("ib-hamburger-side")[0].click() 
+</script>
+
+</html>

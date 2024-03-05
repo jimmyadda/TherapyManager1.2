@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+   <meta name="description" content="Bootstrap Admin App + jQuery">
+   <meta name="keywords" content="app, responsive, jquery, bootstrap, dashboard, admin">
+   <title>Therapy Manager</title>
+   <!-- =============== VENDOR STYLES ===============-->
+   <!-- FONT AWESOME-->
+   <link rel="stylesheet" href="static/vendor/fontawesome/css/font-awesome.min.css"> 
+   <!-- SIMPLE LINE ICONS-->
+   <link rel="stylesheet" href="static/vendor/simple-line-icons/css/simple-line-icons.css">
+   <!-- ANIMATE.CSS-->
+   <link rel="stylesheet" href="static/vendor/animate.css/animate.min.css">
+   <!-- WHIRL (spinners)-->
+   <link rel="stylesheet" href="static/vendor/whirl/dist/whirl.css">
+   <!-- =============== PAGE VENDOR STYLES ===============-->
+   <!-- =============== BOOTSTRAP STYLES ===============-->
+   <link rel="stylesheet" href="static/app/css/bootstrap.css" id="bscss">
+   <!-- =============== APP STYLES ===============-->
+   <link rel="stylesheet" href="static/app/css/app.css" id="maincss">
+
+   <style>
+      a:hover{
+       text-decoration: none!important;
+      }
+
+   </style>
+</head>
+
+<body class="layout-h">
+   <div class="wrapper">
+      <!-- top navbar-->
+      <header class="topnavbar-wrapper">
+         <!-- START Top Navbar-->
+         <nav role="navigation" class="navbar topnavbar">
+            <!-- START navbar header-->
+            <div class="navbar-header">
+               <a href="#/" class="navbar-brand">
+                  <div class="brand-logo">
+                     Therapy Manager                                         
+                  </div>                  
+                  <div class="brand-logo-collapsed">
+                     <img src="img/logo-single.png" alt="App Logo" class="img-responsive">
+                  </div>
+               </a>
+              
+            </div>
+            <!-- END navbar header-->
+            <!-- START Nav wrapper-->
+            <div class="nav-wrapper">
+               <a class="brand-logo"  style="right: 55px;position: absolute;color: white;font-size: 18px; padding: 5px;" href="/myprofile">hey, {{ user.name }} 
+                  
+               </a>
+                  <span id="logout_button" >
+                  <i class="fa fa-sign-out" style="right: 0;position: absolute;color: white;font-size: 25px; padding: 5px;" aria-hidden="true"></i>
+               </span>
+            </div>
+            <!-- END Nav wrapper-->
+
+            <!-- START Search form
+            <form role="search" action="search.html" class="navbar-form">
+               <div class="form-group has-feedback">
+                  <input type="text" placeholder="Type and hit enter ..." class="form-control">
+                  <div data-search-dismiss="" class="fa fa-times form-control-feedback"></div>
+               </div>
+               <button type="submit" class="hidden btn btn-default">Submit</button>
+            </form>-->
+            <!-- END Search form-->
+
+         </nav>
+         <!-- END Top Navbar-->
+      </header>
+      <!-- sidebar-->
+
+      <!-- offsidebar-->
+
+      <!-- Main section-->
+      <section>
+         <!-- Page content-->
+         <div class="content-wrapper">
+            <div class="content-heading">
+               <!-- START Language list-->
+
+               <!-- END Language list    -->
+               <i class="fa fa-dashboard">Dashboard</i>
+               <small data-localize="dashboard.WELCOME"></small>
+            </div>
+            <div class="row">
+             <div class="row">
+               <div class="col-lg-4 col-md-6">
+                  <!-- START widget-->
+                  <a href="/patient">
+                  <div class="panel widget bg-success">
+                     <div class="row row-table">
+                        <div class="col-xs-4 text-center bg-success-dark pv-lg">
+                           <i class="fa fa-wheelchair" style="font-size:48px;"></i>
+                        </div>
+                        <div class="col-xs-8 pv-lg">
+                           <div class="h1 m0 text-bold" id="patientcount"></div>
+                           <div class="text-uppercase">Patient</div>
+                        </div>
+                     </div>
+                  </div>
+                     </a>
+               </div>
+               <div class="col-lg-4 col-md-6">
+                  <a href="/doctor">
+                  <!-- START widget-->
+                  <div class="panel widget bg-danger">
+                     <div class="row row-table">
+                        <div class="col-xs-4 text-center bg-danger-dark pv-lg">
+                          <i class="fa fa-user-md" style="font-size:48px;"></i>
+                        </div>
+                        <div class="col-xs-8 pv-lg">
+                           <div class="h1 m0 text-bold" id="doctorcount"></div>
+                           <div class="text-uppercase">Doctor</div>
+                        </div>
+                     </div>
+                  </div>
+                     </a>
+               </div>
+                  <div class="col-lg-4 col-md-6">
+                  <a href="/appointment">
+                  <!-- START widget-->
+                  <div class="panel widget bg-primary">
+                     <div class="row row-table">
+                        <div class="col-xs-4 text-center bg-primary-dark pv-lg">
+                           <em class="icon-pencil fa-3x"></em>
+                        </div>
+                        <div class="col-xs-8 pv-lg">
+                           <div class="h1 m0 text-bold" id="appointmentcount"></div>
+                           <div class="text-uppercase">Appointment</div>
+                        </div>
+                     </div>
+                  </div>
+                     </a>
+               </div>
+
+            </div>
+            </div>
+         </div>
+      </section>
+      <!-- Page footer-->
+      <footer>
+         <span>&copy; 2024 -Thrapy Manager</span>
+      </footer>
+   </div>
+   <!-- =============== VENDOR SCRIPTS ===============-->
+   <!-- MODERNIZR-->
+   <script src="static/vendor/modernizr/modernizr.custom.js"></script>
+   <!-- JQUERY-->
+   <script src="static/vendor/jquery/dist/jquery.js"></script>
+   <!-- BOOTSTRAP-->
+   <script src="static/vendor/bootstrap/dist/js/bootstrap.js"></script>
+   <!-- STORAGE API-->
+   <script src="static/vendor/jQuery-Storage-API/jquery.storageapi.js"></script>
+   <!-- JQUERY EASING-->
+   <script src="static/vendor/jquery.easing/js/jquery.easing.js"></script>
+   <!-- ANIMO-->
+   <script src="static/vendor/animo.js/animo.js"></script>
+   <!-- LOCALIZE-->
+   <script src="static/vendor/jquery-localize-i18n/dist/jquery.localize.js"></script>
+   <!-- =============== PAGE VENDOR SCRIPTS ===============-->
+   <!-- =============== APP SCRIPTS ===============-->
+   <script src="static/app/js/app.js"></script>
+<script src="static/Js/home.js"></script>
+<script type="text/javascript" src="/static/main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="/static/vendor/fontawesome/css/font-awesome.min.css">
+<link rel="stylesheet" href="static/app/css/bootstrap.css" id="bscss">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<title>עדכן רשומת מטופל</title>
+<style>
+    .editor-toolbar {
+        position: relative;
+        top:45px;
+        background-color: #f4f4f4;
+        border-bottom: 1px solid #ccc;
+        padding: 5px;
+    }
+
+    .editor-button {
+        padding: 5px 10px;
+        margin-right: 5px;
+        cursor: pointer;
+        border: none;
+        background-color: transparent;
+    }
+
+    .editor-button:hover {
+        background-color: #ddd;
+    }
+
+    #editor {
+        position: relative;
+        width: 100%;
+        height: 300px;
+        top: 50px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        font-family: Arial, sans-serif;
+        overflow-y: auto;
+        resize: both;overflow: auto;
+    }
+</style>
+</head>
+<body>
+
+
+    <div class="form-group">
+        <label class="col-lg-2 control-label">Patient</label>
+        <div class="col-lg-10">
+           <select disabled="true" required id="patient_select" type="text" name="pat_id" class="form-control" placeholder="Please select Patient"></select>
+        </div>
+     </div>
+
+<div class="editor-toolbar" >
+    <h4 style="text-align: end;">עדכן רשומה רפואית למטופל</h4>
+    <button class="editor-button" onclick="execCommand('bold')"><b>B</b></button>
+    <button class="editor-button" onclick="execCommand('italic')"><i>I</i></button>
+    <button class="editor-button" onclick="execCommand('underline')"><u>U</u></button>
+    <button class="editor-button" onclick="execCommand('insertOrderedList')">&#35;</button>
+    <button class="editor-button" onclick="execCommand('insertUnorderedList')">&#8226;</button>
+    <button class="editor-button" onclick="execCommand('justifyLeft')"><img src="https://image.flaticon.com/icons/svg/60/60791.svg" alt="Left Align" width="16" height="16"></button>
+    <button class="editor-button" onclick="execCommand('justifyCenter')"><img src="https://image.flaticon.com/icons/svg/60/60795.svg" alt="Center Align" width="16" height="16"></button>
+    <button class="editor-button" onclick="execCommand('justifyRight')"><img src="https://image.flaticon.com/icons/svg/60/60792.svg" alt="Right Align" width="16" height="16"></button>
+
+    <input id="foreColor" type="color">
+    <input id="hiliteColor" type="color">
+
+    <select id="fontname" class="editor-button">
+        <option selected disabled>Font</option>
+        <option value="Arial">Arial</option>
+        <option value="Verdana">Verdana</option>
+        <option value="Helvetica">Helvetica</option>
+        <option value="Times New Roman">Times New Roman</option>
+    </select>
+    <select id="fontsize" class="editor-button">
+        <option selected disabled>Size</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+    </select>
+
+</div>
+
+{% if session['textineditor'] %}
+<div id="texttoedit" style="display: none;"> {{session['textineditor']}} </div>
+<div id="editor" contenteditable="true"></div>
+{% else %}
+<div id="editor" contenteditable="true"></div>
+{% endif %}
+<br>
+<br>
+<button style="margin-top: 20px;" id="savethepatient" type="button" class="btn btn-primary" onclick="saveText()" >Save changes</button>
+
+
+
+
+<script>
+
+   //select changes
+   const selectsize = $("#fontsize");
+   const selectname = $("#fontname");
+   const selectforecolor = $("#foreColor");
+   const selecthiliteColor = $("#hiliteColor");
+
+   selectsize.on('change', function() {
+    execCommand('fontSize', this.value);
+    });
+
+    selectname.on('change', function() {
+        execCommand('fontname', this.value);
+    });
+    selectforecolor.on('change', function() {
+    execCommand('foreColor', this.value);
+    });
+    selecthiliteColor.on('change', function() {
+    execCommand('hiliteColor', this.value);
+    });
+   ////////////////////////////////////////////
+
+
+    function execCommand(command, value = null) {        
+        document.execCommand(command, false, value);
+    }
+
+
+    function saveText() {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const id = urlParams.get('id')
+    const noteid = urlParams.get('noteid')
+    var content = document.getElementById('editor').innerHTML;
+    let f = new FormData();
+    if (noteid > 0){
+    f.append("noteid",noteid)
+    }
+    f.append("pat_id",id)
+    f.append("content",JSON.stringify({content}));
+    fetch("/medicalnote",{
+    "method": "POST",
+    "body":f,       
+    }).then(response => response.text()).then(data => {
+        console.log(data)
+    }).catch(error => {
+        console.error('Error:', error);
+        alert('Failed to save text');
+    });
+   }
+   
+
+  function getPatient(id) {
+    var patientSelect="";
+        var settings = {
+            "async": true,
+            "crossDomain": true,
+            "url": "patientapi/"+id,
+            "method": "GET",
+            "headers": {
+                "cache-control": "no-cache"
+            }
+        }
+
+        $.ajax(settings).done(function (response) {
+            console.log(response)
+         for(i=0;i<response.length;i++){
+          response[i].pat_fullname=response[i].pat_first_name+" "+response[i].pat_last_name
+        patientSelect +="<option value="+response[i].pat_id+">"+response[i].pat_fullname+"</option>"
+        }
+        $("#patient_select").html(patientSelect);
+            })
+
+            $("#patient_select").html(patientSelect)
+        }
+
+   $(document).ready(function () {
+    var texttoedit = document.getElementById("texttoedit").textContent 
+    if(texttoedit){ $("#editor").html(texttoedit); }
+
+    const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const id = urlParams.get('id')
+        //patient select    
+         getPatient(id);                            
+    });
+</script>
+
+
+<script>
+    window.onunload = refreshParent;
+    function refreshParent() {
+        window.opener.location.reload();
+        window.close();
+    }
+</script>
+</body>
+</html>

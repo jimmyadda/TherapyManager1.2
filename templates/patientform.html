@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head  style="overflow-x: hidden;">
+    <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+       <!-- =============== VENDOR STYLES ===============-->
+       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+   <!-- FONT AWESOME-->
+   <link rel="stylesheet" href="static/vendor/fontawesome/css/font-awesome.min.css">
+   <!-- SIMPLE LINE ICONS-->
+   <link rel="stylesheet" href="static/vendor/simple-line-icons/css/simple-line-icons.css">
+   <!-- ANIMATE.CSS-->
+   <link rel="stylesheet" href="static/vendor/animate.css/animate.min.css">
+   <!-- WHIRL (spinners)-->
+   <link rel="stylesheet" href="static/vendor/whirl/dist/whirl.css">
+    <link rel="stylesheet" href="static/vendor/sweetalert/dist/sweetalert.css">
+     <!-- DATATABLES-->
+   <link rel="stylesheet" href="static/vendor/datatables-colvis/css/dataTables.colVis.css">
+   <link rel="stylesheet" href="static/vendor/datatables/media/css/dataTables.bootstrap.css">
+   <link rel="stylesheet" href="static/vendor/dataTables.fontAwesome/index.css">
+   <!-- =============== PAGE VENDOR STYLES ===============-->
+   <!-- =============== BOOTSTRAP STYLES ===============-->
+   <!-- <link rel="stylesheet" href="static/app/css/bootstrap.css" id="bscss"> -->
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+   <link rel="stylesheet" href="static/vendor/datepicker/build/css/bootstrap-datetimepicker.min.css">
+
+   <!-- =============== APP STYLES ===============-->
+   <link rel="stylesheet" href="static/app/css/app.css" id="maincss">
+   <link rel="stylesheet" type="text/css" href="/static/main.css" media="screen"/>
+
+    <title>Therapy Manager - Patient Details</title>
+
+    <style>
+        .form-group {
+            padding-bottom: 30px;
+        }
+        .content-heading{
+            font-size: larger;
+            padding: 10px 15px 30px;
+            line-height: 21px;
+            text-decoration: underline;
+        }
+
+        tr{display:table-row;}
+        td{display:table-cell;}
+        .glyphicon {
+            position: relative;
+            top: 1px;
+            display: inline-block;
+            font-family: "Glyphicons Halflings";
+            font-style: normal;
+            font-weight: 400;
+            line-height: 1;
+                            }
+    </style>
+
+
+
+</head>
+ <body>
+    <nav role="navigation" class="navbar topnavbar">
+        <!-- START navbar header-->
+        <div class="navbar-header">
+           <a href="/" class="navbar-brand">
+              <div class="brand-logo">
+                 Therapy Manager
+              </div>
+              <div class="brand-logo-collapsed">
+                 <img src="img/logo-single.png" alt="App Logo" class="img-responsive">
+              </div>
+           </a>
+        </div>
+        <!-- END navbar header-->
+        <!-- START Nav wrapper-->
+        <div class="nav-wrapper">
+
+        </div>
+        <!-- END Nav wrapper-->
+        <!-- START Search form-->
+        <form style="border-bottom: none;" role="search" action="search.html" class="navbar-form">
+           <div class="form-group has-feedback">
+              <input type="text" placeholder="Type and hit enter ..." class="form-control">
+              <div data-search-dismiss="" class="fa fa-times form-control-feedback"></div>
+           </div>
+           <button type="submit" class="hidden btn btn-default">Submit</button>
+        </form>
+        <!-- END Search form-->
+     </nav>
+     <!-- END Top Navbar-->
+
+     <div class="content-heading">
+        <!-- START Language list-->
+
+        <!-- END Language list    -->
+        Patient Details
+        <small data-localize="dashboard.WELCOME"></small>
+         <div class="pull-right">
+           <div class="btn-group">
+        
+           </div>
+        </div>
+     </div>
+
+    <div class="main">
+
+    <table id="maintbl"> 
+        <form method="POST" id="patientDetail" enctype="multipart/form-data" action="/patientform">
+            <tr>
+                <td>
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">Id</label>
+                        <div class="col-lg-10">
+                        <input readonly type="text"  class="form-control" value="" name="pat_id">
+                        </div>
+                    </div>
+            </td>
+        </tr>
+            <tr>
+                <td>
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">First Name</label>
+                        <div class="col-lg-10">
+                        <input type="text"  class="form-control" value="" name="pat_first_name">
+                        </div>
+                    </div>
+                </td>
+
+                <td>
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">Last name</label>
+                        <div class="col-lg-10">
+                            <input required type="text" name="pat_last_name" class="form-control" placeholder="Last name">
+                        </div>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">Paient id No</label>
+                        <div class="col-lg-10">
+                            <input required type="text" name="pat_insurance_no"  class="form-control" placeholder="Insurance No">
+                        </div>
+                    </div>
+                </td>
+                <td>
+                   
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">Date of birth</label>
+                        <div class="col-lg-10">
+                            <input required type="date" name="pat_dob"  class="form-control" placeholder="date of birth">
+                        </div>
+                    </div>
+                </td>
+                <td>
+                   
+                </td>
+            </tr>
+   <tr>
+        <td>
+            <div class="form-group">
+                <label class="col-lg-2 control-label">Phone Number</label>
+                <div class="col-lg-10">
+                <input required name="pat_ph_no" type="text" class="form-control" placeholder="Phone Number">
+                </div>
+            </div>
+        </td>
+        <td>
+            <div class="form-group">
+                <label class="col-lg-2 control-label">Email</label>
+                <div class="col-lg-10">
+                   <input required type="text" name="pat_email" class="form-control" placeholder="Email">
+                </div>
+             </div>
+        </td>
+   </tr>
+
+   <tr>
+    <td>
+     <div class="form-group">
+                <label class="col-lg-2 control-label">Address</label>
+                <div class="col-lg-10">
+                   <textarea required name="pat_address" class="form-control" placeholder="Address"></textarea>
+                </div>
+             </div>
+            </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="button" name="submit-save" class="blue icon-save" onclick="updatePatientdet();" value="Save update">
+                </td>             
+            </tr>
+    <input type="hidden" name="userid" value="{{ user.userid }}">
+        </form>
+    </table> 
+    
+    <br>
+    <div class="form-group">
+        <br>
+        <label class="col-lg-2 control-label">Patient file Attachments :</label>
+        <br>
+            <div class="col-lg-10"> <a href="#" onclick="openpatienfiles()"> Upload Files!</a></div>
+                <table id="filestbl">                             
+                     {% for taskfile in tasksfiles %}         
+                      <tr>
+                        <td class='filenames' name={{ taskfile['filename'] }} id={{taskfile['pat_id']}}>{{ taskfile['filename'] }} </td>
+                        <td><a id="openfile" href="/download_file/{{ taskfile['filename'] }}" >View File</a> </td>                    
+                        <td><button title="Remove file" class="removebtn"  name={{ taskfile['filename'] }} id="removefile_button"></button> </td>
+                       </tr>
+                     {% endfor %}
+                </table>
+        </div>
+
+          <!-- Records section-->
+          <section>
+            <!-- Page content-->
+            <div class="content-wrapper" style="width: 85%;">
+               <div class="content-heading">
+                  <!-- START Language list-->
+                  <!-- END Language list    -->
+                 Medical Notes
+                  <small data-localize="dashboard.WELCOME"></small>
+                   <div class="pull-right">
+                     <div class="btn-group">
+                        <button  style="bottom: 27px;" id="newmedicalnote" class="mb-sm btn btn-primary" type="button">Add Medical note</button>
+                     </div>
+                  </div>
+               </div>
+              <div class="row">
+                     <div class="col-lg-12">
+                        <div class="panel panel-default"  style="overflow: auto; padding: 15px;">
+                           <div class="table-responsive">
+                              <table id="datatable4" class="table table-striped">
+                                 <thead>
+                                    <tr>
+                                       <th style="width:10%">Rec</th>
+                                       <th style="width:25%">Patient</th>
+                                       <th style="width:35%">Desc</th>
+                                       <th style="width: 10%;">Date</th>
+                                         <th style="width:15%"></th>
+                                         <th style="width:15%"></th>
+                                         <th style="width:15%"></th>
+                                    </tr>
+                                 </thead>
+                                 <tbody>
+                                   {% for note in pat_mednotes%}
+                                   <tr>
+                                     <td>{{ note['rec_id'] }}</td>
+                                     <td>{{ note['pat_first_name'] }} {{ note['pat_last_name'] }}</td>
+                                     <td>{{ note['text'] }}</td>                
+                                     <td>{{ note['create_date'] }}</td>  
+                                     <td><button class="btn-xs btn btn-info btn-edit" type="button">Edit</button> &nbsp;
+                                     <button class="btn-xs btn btn-danger delete-btn" type="button">Delete</button></td>
+                                     <td name="id" class="noteid" style="display: none;">{{ note['rec_id'] }}</td>
+                                     <td name="id" class="patientid" style="display: none;">{{ note['pat_id'] }}</td>
+                                   </tr>
+                                   {% endfor %} 
+                                 </tbody>
+                              </table>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+            </div>
+         </section>
+
+         <section>
+            <!-- Page content-->
+            <div class="content-wrapper" style="width: 85%;">
+               <div class="content-heading">
+                  <!-- START Language list-->
+   
+                  <!-- END Language list    -->
+                 Patient Appointments
+                  <small data-localize="dashboard.WELCOME"></small>
+                   <div class="pull-right">
+                     <div class="btn-group">
+                        <button  style="bottom: 27px;" id="addpatient"  class="mb-sm btn btn-primary" type="button">Book Appointment for Patient</button>   
+                     </div>
+                  </div>
+               </div>
+         {%if appointments %}            
+              <div class="row">
+                     <div class="col-lg-12">
+                        <div class="panel panel-default"  style="padding: 15px;">
+   
+                           <div class="table-responsive">
+                              <table id="datatable5" class="table table-striped">
+                                 <thead>
+                                    <tr>
+                                       <th style="width:20%">Doctor Name</th>
+                                       <th style="width:25%">Patient Name</th>
+                                       <th style="width:15%">Appointment Date</th>
+                                         <th style="width:15%"></th>
+                                    </tr>
+                                 </thead>
+                                 <tbody>
+                                    {% for appointment in appointments %}
+                                    <tr>
+                                      <td>{{ appointment['doc_first_name'] }} {{ appointment['doc_last_name'] }}</td>
+                                      <td>{{ appointment['pat_first_name'] }} {{ appointment['pat_last_name'] }}</td>
+                                      <td>{{ appointment['appointment_date'] }}</td>                
+                                    </tr>
+                                    {% endfor %} 
+                                 </tbody>
+                              </table>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+         {% endif %}
+            <!-- Add appointment new -->
+            <div id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" class="modal fade">
+                        <div class="modal-dialog">
+                           <div class="modal-content">
+                              <div class="modal-header">
+                                 <button type="button" data-dismiss="modal" aria-label="Close" class="close">
+                                    <span aria-hidden="true">&times;</span>
+                                 </button>
+                                 <h4 id="myModalLabel" class="modal-title">Appointment</h4>
+                              </div>
+                              <div class="modal-body">
+                                 <form data-parsley-validate="" novalidate="" class="form-horizontal" id="detailform">
+                                             <div class="form-group">
+                                                <label class="col-lg-2 control-label">Doctor</label>
+                                                <div class="col-lg-10">
+                                                   <select required id="doctor_select" type="text" name="doc_id" class="form-control" placeholder="Please select doctor"></select>
+                                                </div>
+                                             </div>
+                                             <div class="form-group">
+                                                <label class="col-lg-2 control-label">Patient</label>
+                                                <div class="col-lg-10">
+                                                   <select required id="patient_select" type="text" name="pat_id" class="form-control" placeholder="Please select Patient"></select>
+                                                </div>
+                                             </div>
+                  
+                                    <div class="form-group">
+                                                <label class="col-lg-2 control-label">Appointment date</label>
+                  
+                                           <div class="col-lg-10">
+                                             <input id="datepicker1" size="16" type="text" name="appointment_date" required class="form-control form_datetime" value="">
+                                                </div>          
+                                             </div>                             
+                                          </form>                       
+                              </div>
+                              <div class="modal-footer">
+                                 <button type="button" data-dismiss="modal" class="btn btn-default">Close</button>
+                                 <button id="savethepatient" type="button" class="btn btn-primary">Save changes</button>
+                              </div>
+                           </div>
+                        </div>
+        </div> <!--end of Modal-->
+    </div> <!--end of content-wrapper-->
+         </section>
+    </div>
+
+    <script>
+ $( document ).ready(function() {
+    const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const id = urlParams.get('id')
+        if (id) {
+            var jsonData = JSON.parse('{{ session["patientdata"] | tojson | safe }}');
+            console.log(jsonData);
+            sessionStorage.setItem('pat_det', JSON.stringify(jsonData));
+
+        }
+        
+       // var x = JSON.parse('{{ appointments | tojson | safe }}');
+
+                let test = sessionStorage.getItem("pat_det");
+                console.log("test",test);
+                let json_data = JSON.stringify(test);
+                var data = JSON.parse(json_data); 
+                const newdata = JSON.parse(data); 
+                console.log("newdata",newdata);
+                    //display data
+                    populate('#maintbl', newdata[0]) 
+                    
+            $("#addpatient").click(function () {
+                $('#myModal').modal().one('shown.bs.modal', function (e) {
+                    $("#savethepatient").off("click").on("click", function (e) {
+                        var instance = $('#detailform').parsley();
+                        instance.validate()
+                        if (instance.isValid()) {
+                            jsondata = $('#detailform').serializeJSON();
+                            addmedicalnote(jsondata)
+                        }
+
+                        })
+                    })
+                
+                })  
+
+            });
+
+
+            function populate(frm, data) {
+                $.each(data, function(key, value){
+                    $('[name='+key+']', frm).val(value);
+                });
+            }
+
+            
+ 
+     function updatePatientdet() {
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const id = urlParams.get('id')
+     
+        var data = JSON.stringify($('form').serializeJSON());
+        console.log(data);
+        
+        var settings = {
+            "async": true,
+            "crossDomain": true,
+            "url": "patientapi/" + id,
+            "method": "PUT",
+            "headers": {
+                "content-type": "application/json",
+                "cache-control": "no-cache"
+            },
+            "processData": false,
+            "data": data
+        }
+
+        $.ajax(settings).done(function (response) {
+            $('.modal.in').modal('hide')
+            $.notify("Patient Updated Successfully", {"status":"success"});
+            getPatient()
+        });
+        
+
+
+    }
+
+    function openpatienfiles(){
+        let pat_id =  document.getElementsByName('pat_id')[0].value
+        window.open("/upload?id="+pat_id+"",'File Upload','width=600,height=300,resizable=no');
+        return false;
+        //window.open('/patientnotes?id='+pat_id); 
+        //return false;
+    }
+    </script>
+</body>
+   <!-- =============== VENDOR SCRIPTS ===============-->
+   <!-- MODERNIZR-->
+   <script src="/static/vendor/modernizr/modernizr.custom.js"></script>
+   <!-- JQUERY-->
+   <script src="/static/vendor/jquery/dist/jquery.js"></script>
+   <!-- BOOTSTRAP-->
+   <script src="/static/vendor/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="/static/vendor/datatables/media/js/jquery.dataTables.min.js"></script>
+   <script src="/static/vendor/datatables-colvis/js/dataTables.colVis.js"></script>
+   <script src="/static/vendor/datatables/media/js/dataTables.bootstrap.js"></script>
+   <script src="/static/vendor/serialize/jquery.serializejson.js"></script>
+   <!-- STORAGE API-->
+   <script src="/static/vendor/jQuery-Storage-API/jquery.storageapi.js"></script>
+   <!-- JQUERY EASING-->
+   <script src="/static/vendor/jquery.easing/js/jquery.easing.js"></script>
+   <!-- ANIMO-->
+   <script src="/static/vendor/animo.js/animo.js"></script>
+    <script src="/static/vendor/parsley/parsley.min.js"></script>
+       <script src="/static/vendor/sweetalert/dist/sweetalert.min.js"></script>
+   <!-- LOCALIZE-->
+   <script src="/static/vendor/jquery-localize-i18n/dist/jquery.localize.js"></script>
+   <script src="/static/vendor/datepicker/build/js/bootstrap-datetimepicker.min.js"></script> 
+   <script src="https://cdn.jsdelivr.net/npm/add-to-calendar-button@2" async defer></script>
+   <script type="text/javascript" src="https://cdn.addevent.com/libs/atc/1.6.1/atc.min.js" async defer></script>
+   <!-- =============== PAGE VENDOR SCRIPTS ===============-->
+   <!-- =============== APP SCRIPTS ===============-->
+
+   <script src="/static/app/js/app.js"></script>
+
+
+<script>
+    $(document).ready(function () {
+
+        const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const patienid = urlParams.get('id')
+
+            var s = document.createElement("script");
+        s.type = "text/javascript";
+        s.src = "/static/js/appointmentpatientform.js";
+        $("head").append(s);
+
+            let removefiles = document.querySelectorAll("#removefile_button");
+                removefiles.forEach(btn => {
+                btn.addEventListener('click',Remove_file);
+            });
+      var table = $('#datatable4').DataTable();
+ 
+             $('#datatable4 tbody').on('click', '.delete-btn', function () {
+                 var data = table.row($(this).parents('tr')).data();
+                 console.log(data)
+                 deleteMedicalNote(data[0])
+             });
+ 
+             $('.btn-edit').on("click", function (e) {
+                 var data = table.row($(this).parents('tr')).data();
+                 console.log(data[0]);               
+                 openmedicalnote(data[0],data[6])
+             });
+ 
+              //////////////
+             $('#newmedicalnote').on("click", function (e) {
+                const queryString = window.location.search;
+                const urlParams = new URLSearchParams(queryString);
+                const patienid = urlParams.get('id')
+                window.open('/medicalnote?id='+patienid); 
+                return false;
+             });
+
+        function deleteMedicalNote(id) {
+         var settings = {
+             "async": true,
+             "crossDomain": true,
+             "url": "medicalnoteapi/" + id,
+             "method": "DELETE",
+             "headers": {
+                 "cache-control": "no-cache",
+                 "postman-token": "28ea8360-5af0-1d11-e595-485a109760f2"
+             }
+         }
+         //Yes No ?
+         swal({
+             title: "Are you sure?",
+             text: "You will not be able to recover this data",
+             type: "warning",
+             showCancelButton: true,
+             confirmButtonColor: "#DD6B55",
+             confirmButtonText: "Yes, delete it!",
+             closeOnConfirm: false
+         }, function () {
+             $.ajax(settings).done(function (response) {
+                 swal("Deleted!", "Medical Note has been deleted.", "success");
+                 table.destroy();
+                 $('#datatable4 tbody').empty(); // empty in case the columns change
+                 getMedicalNote()
+             });
+         });
+ 
+     }
+    
+ 
+        function openmedicalnote(noteid,patienid){               
+         window.open('/medicalnote?id='+patienid+"&noteid="+noteid); 
+         return false;
+     }
+      
+        async function Remove_file(event){  
+            //let folderid = document.querySelector("[name = 'folderid']").value;
+            let id = document.querySelector("[name = 'pat_id']").value;
+            let userid = document.querySelector("[name = 'userid']").value;
+            var $row = $(this).closest("tr");
+            var file = $row.find(".filenames");
+
+            console.log(file[0]);
+            file[0].style.text += ' -Deleting';
+            var file_to_delete = file[0].getAttribute("name");
+            console.log(file_to_delete)
+            console.log(id,userid,file_to_delete)
+            if(file_to_delete.length > 0){
+
+                let f = new FormData();
+                f.append("id",id)
+                f.append("userid",userid);
+                f.append("filename",file_to_delete);
+                 await fetch('/delete_file', {
+                    method: 'DELETE',
+                    body: f
+                })
+                .then((response) => {
+                // handle success
+                response.json()
+                console.log("Remove_file- success",response);
+                location.reload()
+                })
+
+                return "ok"
+                // .then(response => response.json())
+                // .then(response => console.log(response))
+            } //end if file
+
+        }
+
+        function HandleRemove_file(event) {
+        Remove_file(event).then((json) => {
+                // handle success
+                console.log("Remove_file- success",json);
+                location.reload()
+                })
+            .catch(error => error);
+            
+        }
+
+            $("#addpatient").click(function () {
+                const queryString = window.location.search;
+                const urlParams = new URLSearchParams(queryString);
+                const patienid = urlParams.get('id')
+
+                $('#myModal').modal().one('shown.bs.modal', function (e) {
+                    $("#savethepatient").off("click").on("click", function (e) {
+                        console.log("inn")
+                        var instance = $('#detailform').parsley();
+                        instance.validate()
+                        if (instance.isValid()) {
+                            jsondata = $('#detailform').serializeJSON();
+                            addmedicalnote(jsondata)
+                        }
+
+                    })
+
+                })
+
+            })                
+    });
+ 
+
+ </script>
+
+</html>

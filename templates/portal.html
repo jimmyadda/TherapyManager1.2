@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+           <!-- =============== VENDOR STYLES ===============-->
+           <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+           <!-- FONT AWESOME-->
+           <link rel="stylesheet" href="static/vendor/fontawesome/css/font-awesome.min.css">
+           <!-- SIMPLE LINE ICONS-->
+           <link rel="stylesheet" href="static/vendor/simple-line-icons/css/simple-line-icons.css">
+           <!-- ANIMATE.CSS-->
+           <link rel="stylesheet" href="static/vendor/animate.css/animate.min.css">
+           <!-- WHIRL (spinners)-->
+           <link rel="stylesheet" href="static/vendor/whirl/dist/whirl.css">
+            <link rel="stylesheet" href="static/vendor/sweetalert/dist/sweetalert.css">
+             <!-- DATATABLES-->
+           <link rel="stylesheet" href="static/vendor/datatables-colvis/css/dataTables.colVis.css">
+           <link rel="stylesheet" href="static/vendor/datatables/media/css/dataTables.bootstrap.css">
+           <link rel="stylesheet" href="static/vendor/dataTables.fontAwesome/index.css">
+           <!-- =============== PAGE VENDOR STYLES ===============-->
+           <!-- =============== BOOTSTRAP STYLES ===============-->
+           <!-- <link rel="stylesheet" href="static/app/css/bootstrap.css" id="bscss"> -->
+              <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+           <link rel="stylesheet" href="static/vendor/datepicker/build/css/bootstrap-datetimepicker.min.css">
+        
+           <!-- =============== APP STYLES ===============-->
+           <link rel="stylesheet" href="static/app/css/app.css" id="maincss">
+           <link rel="stylesheet" type="text/css" href="/static/main.css" media="screen"/>
+
+    <title>Patient Portal</title>
+
+<style>
+   .m10{
+   margin-left: 10px;
+   }
+
+</style>
+</head>
+<body class="layout-h">
+    <div class="wrapper">
+       <!-- top navbar-->
+       <header class="topnavbar-wrapper">
+          <!-- START Top Navbar-->
+          <nav role="navigation" class="navbar topnavbar">
+             <!-- START navbar header-->
+             <div class="navbar-header">
+                <a href="#/" class="navbar-brand">
+                   <div class="brand-logo">
+                      Therapy Manager                                         
+                   </div>                  
+                   <div class="brand-logo-collapsed">
+                      <img src="img/logo-single.png" alt="App Logo" class="img-responsive">
+                   </div>
+                </a>
+               
+             </div>
+             <!-- END navbar header-->
+             <!-- START Nav wrapper-->
+             <div class="nav-wrapper">
+                <a class="brand-logo"  style="right: 55px;position: absolute;color: white;font-size: 18px; padding: 5px;" href="/myprofile">hey, {{ user.name }} 
+                   
+                </a>
+                   <span id="logout_button" >
+                   <i class="fa fa-sign-out" style="right: 0;position: absolute;color: white;font-size: 25px; padding: 5px;" aria-hidden="true"></i>
+                </span>
+             </div>
+             <!-- END Nav wrapper--> 
+          </nav>
+          <!-- END Top Navbar-->
+       </header>
+       <!-- sidebar-->
+ 
+       <!-- offsidebar-->
+ 
+       <!-- Main section-->
+       <section>
+
+          <div class="content-wrapper">
+             <div class="content-heading">
+                <!-- START Language list-->
+ 
+                <!-- END Language list    -->
+                <i class="fa fa-dashboard">Portal</i>
+                <small data-localize="dashboard.WELCOME"></small>
+             </div>
+              <div class="row">
+               <h3>Appointments</h3> 
+               <div class="pull-right" style="right: 0;position: absolute;">
+                 <div class="btn-group">
+                    <button  style="bottom: 47px;" id="addpatient"  class="mb-sm btn btn-primary"  type="button">Request Appointment</button>   
+                 </div>
+              </div>
+               {%if appointment_dates.lastappointment%}
+                <div class="col-lg-6 col-md-6">
+                    <!-- START widget-->     
+                  <div class="panel widget bg-primary">
+                     <div class="row row-table">
+                        <div class="col-xs-4 text-center bg-primary-dark pv-lg">
+                           <em class="icon-pencil fa-3x"></em>
+                        </div>
+                        <div class="col-xs-8 pv-lg">
+                           <div class="h1 m0 text-bold" id="Myappointmentcount"></div>    
+                           Last visit :                      
+                           <div class="text-uppercase"> 
+                            <p> {{ appointment_dates['lastappointment'] }}</p></div>
+                        </div>
+                     </div>
+                  </div>
+                 </div>
+                 {%endif%}
+
+                 {%if appointment_dates.nextappointment%}
+                 <div class="col-lg-6 col-md-6">
+                     <!-- START widget-->     
+                   <div class="panel widget bg-primary">
+                      <div class="row row-table">
+                         <div class="col-xs-4 text-center bg-primary-dark pv-lg">
+                            <em class="icon-pencil fa-3x"></em>
+                         </div>
+                         <div class="col-xs-8 pv-lg">
+                          <div class="h1 m0 text-bold" id="Myappointmentcount"></div>
+                          Next visit :
+                          <div class="text-uppercase"> 
+                            <p> {{ appointment_dates['nextappointment'] }}</p></div>
+                        </div>
+                      </div>
+                      </div>
+                   </div>          
+              {%endif%}
+
+            </div> <!-- end of Row -->
+         </div> <!-- end of content-wrapper-->
+
+
+                  <!-- 2 col  -->
+                  <div class="content-wrapper">
+                  <div class="row">
+                     <h3>Personal data</h3>
+                  <div class="col-lg-6 col-md-6">
+                       <!-- START widget-->     
+                           <div class="panel widget bg-secondary">
+                                 <div class="row">
+                                    <div class="m10 text-bold">
+                                       <label class="col-lg-4 control-label">Name: </label>
+                                       <label class="">{{ patientdata[0]['pat_first_name'] }} {{ patientdata[0]['pat_last_name'] }}</label>                                    
+                                    </div>
+                                 </div><!--end row-table -->
+                                 <div class="row">
+                                    <div class="m10 text-bold">
+                                       <label class="col-lg-4 control-label">Date of birth: </label>
+                                       <label class="">{{ patientdata[0]['pat_dob'] }}</label>                                    
+                                    </div>
+                                 </div><!--end row-table --> 
+                                 <div class="row">
+                                    <div class="m10 text-bold">
+                                       <label class="col-lg-4 control-label">Phone Number: </label>
+                                       <label class="">{{ patientdata[0]['pat_ph_no'] }}</label>                                    
+                                    </div>
+                                 </div><!--end row-table -->  
+                                 <div class="row">
+                                    <div class="m10 text-bold">
+                                       <label class="col-lg-4 control-label">Email: </label>
+                                       <label class="">{{ patientdata[0]['pat_email'] }}</label>                                    
+                                    </div>
+                                 </div><!--end row-table -->                                                             
+                           </div>
+                  </div>
+               </div> <!-- end of Row -->
+            </div> <!-- end of content-wrapper-->
+
+
+
+
+
+
+
+                     <div class="col-lg-4 col-md-6">
+                        <!-- START widget-->
+                        <a href="/patient">
+                           <div class="panel widget bg-success">
+                              <div class="row row-table">
+                                 <div class="col-xs-4 text-center bg-success-dark pv-lg">
+                                    <i class="fa fa-wheelchair" style="font-size:48px;"></i>
+                                 </div>
+
+                                 </div>                          
+                                 <div class="col-xs-8 pv-lg">
+                                    <div class="h1 m0 text-bold" id="patientcount"></div>
+                                    <div class="text-uppercase">Patient</div>
+                                 </div>
+                              </div>
+                           </a>
+                        </div>
+
+                        <div class="col-lg-4 col-md-6">
+                           <a href="/doctor">
+                           <!-- START widget-->
+                           <div class="panel widget bg-danger">
+                              <div class="row row-table">
+                                 <div class="col-xs-4 text-center bg-danger-dark pv-lg">
+                                    <i class="fa fa-user-md" style="font-size:48px;"></i>
+                                 </div>
+                                 <div class="col-xs-8 pv-lg">
+                                    <div class="h1 m0 text-bold" id="doctorcount"></div>
+                                    <div class="text-uppercase">Doctor</div>
+                                 </div>
+                              </div>
+                           </div>
+                              </a>
+                        </div>
+          </div>
+
+                                  <!-- Add appointment new -->
+                                  <div id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" class="modal" style=" ">
+                                    <div class="modal-dialog">
+                                       <div class="modal-content">
+                                          <div class="modal-header">
+                                             <button type="button" data-dismiss="modal" aria-label="Close" class="close">
+                                                <span aria-hidden="true">&times;</span>
+                                             </button>
+                                             <h4 id="myModalLabel" class="modal-title">Appointment</h4>
+                                          </div>
+                                          <div class="modal-body">
+                                             <form data-parsley-validate="" novalidate="" class="form-horizontal" id="detailform">
+                                                         <div class="form-group">
+                                                            <label class="col-lg-2 control-label">Doctor</label>
+                                                            <div class="col-lg-10">
+                                                               <select required id="doctor_select" type="text" name="doc_id" class="form-control" placeholder="Please select doctor"></select>
+                                                            </div>
+                                                         </div>
+                                                         <div class="form-group">
+                                                            <label class="col-lg-2 control-label">Patient</label>
+                                                            <div class="col-lg-10">
+                                                               <select required id="patient_select" type="text" name="pat_id" class="form-control" placeholder="Please select Patient"></select>
+                                                            </div>
+                                                         </div>
+                              
+                                                <div class="form-group">
+                                                            <label class="col-lg-2 control-label">Appointment date</label>
+                              
+                                                       <div class="col-lg-10">
+                                                         <input id="datepicker1" size="16" type="text" name="appointment_date" required class="form-control form_datetime" value="">
+                                                            </div>          
+                                                         </div>                             
+                                                      </form>                       
+                                          </div>
+                                          <div class="modal-footer">
+                                             <button type="button" data-dismiss="modal" class="btn btn-default">Close</button>
+                                             <button id="savethepatient" type="button" class="btn btn-primary">Save changes</button>
+                                          </div>
+                                       </div>
+                                    </div>
+                    </div> <!--end of Modal-->
+
+       </section>
+       <!-- Page footer-->
+       <footer>
+          <span>&copy; 2024 -Thrapy Manager</span>
+       </footer>
+    </div>
+   <!-- =============== VENDOR SCRIPTS ===============-->
+   <!-- MODERNIZR-->
+   <script src="/static/vendor/modernizr/modernizr.custom.js"></script>
+   <!-- JQUERY-->
+   <script src="/static/vendor/jquery/dist/jquery.js"></script>
+   <!-- BOOTSTRAP-->
+   <script src="/static/vendor/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="/static/vendor/datatables/media/js/jquery.dataTables.min.js"></script>
+   <script src="/static/vendor/datatables-colvis/js/dataTables.colVis.js"></script>
+   <script src="/static/vendor/datatables/media/js/dataTables.bootstrap.js"></script>
+   <script src="/static/vendor/serialize/jquery.serializejson.js"></script>
+   <!-- STORAGE API-->
+   <script src="/static/vendor/jQuery-Storage-API/jquery.storageapi.js"></script>
+   <!-- JQUERY EASING-->
+   <script src="/static/vendor/jquery.easing/js/jquery.easing.js"></script>
+   <!-- ANIMO-->
+   <script src="/static/vendor/animo.js/animo.js"></script>
+    <script src="/static/vendor/parsley/parsley.min.js"></script>
+       <script src="/static/vendor/sweetalert/dist/sweetalert.min.js"></script>
+   <!-- LOCALIZE-->
+   <script src="/static/vendor/jquery-localize-i18n/dist/jquery.localize.js"></script>
+   <script src="/static/vendor/datepicker/build/js/bootstrap-datetimepicker.min.js"></script> 
+   <script src="https://cdn.jsdelivr.net/npm/add-to-calendar-button@2" async defer></script>
+   <script type="text/javascript" src="https://cdn.addevent.com/libs/atc/1.6.1/atc.min.js" async defer></script>
+   <!-- =============== PAGE VENDOR SCRIPTS ===============-->
+   <!-- =============== APP SCRIPTS ===============-->
+
+   <script src="/static/app/js/app.js"></script>
+    <script>
+      $( document ).ready(function() {
+         const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            const id = urlParams.get('patid')
+         if (id) {
+            var jsonData = JSON.parse('{{ session["patientdata"] | tojson | safe }}');
+            console.log(jsonData);
+            sessionStorage.setItem('pat_det', JSON.stringify(jsonData));
+
+         }
+
+                let test = sessionStorage.getItem("pat_det");
+                let json_data = JSON.stringify(test);
+                var data = JSON.parse(json_data); 
+                const newdata = JSON.parse(data); 
+ 
+      });
+
+
+            function populate(frm, data) {
+                $.each(data, function(key, value){
+                    $('[name='+key+']', frm).val(value);
+                });
+            }
+      
+    </script>
+</body>
+
+<script>
+   $(document).ready(function () {
+      var s = document.createElement("script");
+        s.type = "text/javascript";
+        s.src = "/static/js/portal.js";
+        $("head").append(s);
+   });
+   
+   </script>
+
+
+
+
+
+</html>
