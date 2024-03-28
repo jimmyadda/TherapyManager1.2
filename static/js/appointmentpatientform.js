@@ -15,8 +15,8 @@ $(document).ready(function () {
     function addAppointment(data) {
         var table
 
-      alert(data);
-      debugger;
+      alert(JSON.stringify(data));
+
         var settings = {
             "async": true,
             "crossDomain": true,
@@ -30,8 +30,9 @@ $(document).ready(function () {
             "processData": false,
             "data": JSON.stringify(data)
         }
-        $.ajax(settings).
-        done(function (response) {
+        alert(JSON.stringify(settings));
+
+        $.ajax(settings).done(function (response) {
           console.log(response);
          $.notify("Appointment Added Successfully", {"status":"success"});
             $('.modal.in').modal('hide')
@@ -47,17 +48,23 @@ $(document).ready(function () {
             fetch("/send-mail",{
             "method": "POST",
             "body":f,       
-            }).then(response => response.text()).then(data => {               
+            }).then(response => response.text()).then(data => {                           
             });
             getAppointment()
+        }).fail(function (ajaxResponse) {
+            console.log(ajaxResponse);
         });
+
         refreshParent();
+
     }
 
     function refreshParent() {
         window.opener.location.reload();
-        window.close();
+        //window.close();
+        //window.location.reload();
     }
+
 
     function deleteAppointment(id) {
         var settings = {

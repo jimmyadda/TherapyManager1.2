@@ -20,8 +20,7 @@ class Appointments(Resource):
         return patappointments 
     
     def post(self):
-        """Create the appoitment by assiciating patient and docter with appointment date"""
-
+        """Create the appoitment by assiciating patient and doctor with appointment date"""
         appointment = request.get_json(force=True)
         print(appointment)
         pat_id = appointment['pat_id']

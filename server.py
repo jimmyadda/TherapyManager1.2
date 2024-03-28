@@ -503,7 +503,6 @@ def update_patien():
     user = flask_login.current_user.get_dict()
     form = dict(request.values)
     id = form['pat_id']
-    print("patientform",form)
     sql = "UPDATE patient SET pat_first_name =:pat_first_name, pat_last_name =:pat_last_name, pat_ph_no =:pat_ph_no, pat_address=:pat_address, pat_email =:pat_email, pat_insurance_no =:pat_insurance_no where pat_id =:pat_id"
     ok = database_write(sql,form)
     ok=1    

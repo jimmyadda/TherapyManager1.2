@@ -4,6 +4,7 @@
     const Lang = urlParams.get('lang')
 
     function translate_DOM_element(cssclass,jsonobj,fromlanguage,tolanguage){
+        tolanguage = tolanguage || "EN";
         const translate_Json= jsonobj
         const from_lang = fromlanguage;
         const to_lang = tolanguage; 
@@ -34,7 +35,7 @@
         $('#pullcss').removeClass('pull-right').addClass('pull-left');    
         $('#pullcss1').removeClass('pull-right').addClass('pull-left');     
         }
-        if(tolanguage == "EN"){
+        else{
             $("body").css("direction","ltr");
             $("body").css("text-align","left");
             $('#pullcss').removeClass('pull-left').addClass('pull-right');
