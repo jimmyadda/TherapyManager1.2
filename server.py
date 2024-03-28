@@ -737,7 +737,7 @@ def postmsg():
 
 
 #dev 
-app.run(debug=True)
+#app.run(debug=True)
 
 #production  - remark above
 if __name__ == "__main__":

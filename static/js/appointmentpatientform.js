@@ -15,7 +15,7 @@ $(document).ready(function () {
     function addAppointment(data) {
         var table
 
-      alert(JSON.stringify(data));
+      
 
         var settings = {
             "async": true,
@@ -30,7 +30,7 @@ $(document).ready(function () {
             "processData": false,
             "data": JSON.stringify(data)
         }
-        alert(JSON.stringify(settings));
+        
 
         $.ajax(settings).done(function (response) {
           console.log(response);
