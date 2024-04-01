@@ -14,9 +14,6 @@ $(document).ready(function () {
  
     function addAppointment(data) {
         var table
-
-      
-
         var settings = {
             "async": true,
             "crossDomain": true,
@@ -45,23 +42,25 @@ $(document).ready(function () {
             $('.modal.in').modal('hide')
             //table.destroy();
             $('#datatable5 tbody').empty(); // empty in case the columns change   
-             
-            //send mail 
-            let f = new FormData();
-            f.append("id",data.pat_id)
-            f.append("doc_id",data.doc_id)
-            f.append("appointment_date",data.appointment_date)
-            console.log('email')
-            fetch("/send-mail",{
-            "method": "POST",
-            "body":f,       
-            }).then(response => response.text()).then(data => {                           
-            });
+            var patien_mail = document.getElementsByName("pat_email")[0].value
+                //send mail 
+                if(patien_mail!=" "){
+                let f = new FormData();
+                f.append("id",data.pat_id)
+                f.append("doc_id",data.doc_id)
+                f.append("appointment_date",data.appointment_date)
+                console.log('email')
+                fetch("/send-mail",{
+                "method": "POST",
+                "body":f,       
+                }).then(response => response.text()).then(data => {                           
+                });
+            }
             getAppointment()
         }).fail(function (ajaxResponse) {
             console.log(ajaxResponse);
         });
-
+    
         refreshParent();
 
     }

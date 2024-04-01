@@ -29,18 +29,19 @@ $(document).ready(function () {
             $('.modal.in').modal('hide')
             table.destroy();
             $('#datatable4 tbody').empty(); // empty in case the columns change   
-
-            //send mail 
+                //send mail 
+                if(patien_mail!=" "){
             let f = new FormData();
             f.append("id",data.pat_id)
             f.append("doc_id",data.doc_id)
             f.append("appointment_date",data.appointment_date)
-
+            var patien_mail = document.getElementsByName("pat_email")[0].value
             fetch("/send-mail",{
             "method": "POST",
             "body":f,       
             }).then(response => response.text()).then(data => {               
             });
+        }
             getAppointment()
         });
         if(data.app_id){
