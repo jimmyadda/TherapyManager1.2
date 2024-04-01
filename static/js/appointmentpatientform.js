@@ -34,7 +34,14 @@ $(document).ready(function () {
 
         $.ajax(settings).done(function (response) {
           console.log(response);
-         $.notify("Appointment Added Successfully", {"status":"success"});
+          //Get LAng
+          var my_lang = sessionStorage.getItem("lang");
+          if(my_lang=="HE"){
+            $.notify("פגישת טיפול נקבעה בהצלחה", {"status":"success"});   
+            }
+            else{
+                $.notify("Appointment Added Successfully", {"status":"success"});
+            } 
             $('.modal.in').modal('hide')
             //table.destroy();
             $('#datatable5 tbody').empty(); // empty in case the columns change   

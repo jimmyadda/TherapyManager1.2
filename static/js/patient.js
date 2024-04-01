@@ -20,7 +20,14 @@ $(document).ready(function () {
 
         $.ajax(settings).done(function (response) {
             $('.modal.in').modal('hide')
-            $.notify("Patient Added Successfully", {"status":"success"});
+                                  //Get LAng
+                                  var my_lang = sessionStorage.getItem("lang");
+                                  if(my_lang=="HE"){
+                                  $.notify(" מטופל התווסף בהצלחה", {"status":"success"}); 
+                                  }
+                                  else{
+                                      $.notify("Patient Added Successfully", {"status":"success"});
+                                  } 
             table.destroy();
             $('#datatable4 tbody').empty(); // empty in case the columns change
             getPatient()
@@ -77,7 +84,14 @@ swal({
 
         $.ajax(settings).done(function (response) {
             $('.modal.in').modal('hide')
-            $.notify("Patient Updated Successfully", {"status":"success"});
+                                              //Get LAng
+                                              var my_lang = sessionStorage.getItem("lang");
+                                              if(my_lang=="HE"){
+                                              $.notify("עודכן בהצלחה", {"status":"success"}); 
+                                              }
+                                              else{
+                                                  $.notify("Patient Updated Successfully", {"status":"success"});
+                                              } 
             table.destroy();
             $('#datatable4 tbody').empty(); // empty in case the columns change
             getPatient()

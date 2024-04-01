@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="/static/vendor/fontawesome/css/font-awesome.min.css">
 <link rel="stylesheet" href="static/app/css/bootstrap.css" id="bscss">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<title>עדכן רשומת מטופל</title>
+<title>Medical Note</title>
 <style>
     .editor-toolbar {
         position: relative;
@@ -39,6 +39,11 @@
         overflow-y: auto;
         resize: both;overflow: auto;
     }
+.HE 
+{
+  float: none;
+  text-align: right;
+}
 </style>
 </head>
 <body>
@@ -52,7 +57,7 @@
      </div>
 
 <div class="editor-toolbar" >
-    <h4 style="text-align: end;">עדכן רשומה רפואית למטופל</h4>
+    <h4 key="medrech4" class="translate EN" style="text-align: left;">Update patient medical record</h4>
     <button class="editor-button" onclick="execCommand('bold')"><b>B</b></button>
     <button class="editor-button" onclick="execCommand('italic')"><i>I</i></button>
     <button class="editor-button" onclick="execCommand('underline')"><u>U</u></button>
@@ -143,7 +148,14 @@
     "method": "POST",
     "body":f,       
     }).then(response => response.text()).then(data => {
-        $.notify("medical note Added Successfully", {"status":"success"});
+                                //Get LAng
+                                var my_lang = sessionStorage.getItem("lang");
+                        if(my_lang=="HE"){
+                        $.notify("רשומה התווספה בהצלחה", {"status":"success"}); 
+                        }
+                        else{
+                            $.notify("Medical Note Added Successfully", {"status":"success"});
+                        } 
     }).catch(error => {
         console.error('Error:', error);
         alert('Failed to save text');
@@ -226,6 +238,14 @@
 
    <!-- =============== APP SCRIPTS ===============-->
    <script src="/static/app/js/app.js"></script>
+   <script type="text/javascript">
+
+    var my_lang = sessionStorage.getItem("lang");
+    var Translate_jsonData = JSON.parse('{{ Translate_data | tojson | safe }}');
+  
+  </script>
+  <script type="text/javascript" src="/static/js/Helpers.js"></script>
+
 <script src="/static/js/appointment.js"></script>
 <script src="/static/js/disabledatetime.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>

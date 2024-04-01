@@ -21,7 +21,16 @@ $(document).ready(function () {
 
         $.ajax(settings).done(function (response) {
             $('.modal.in').modal('hide')
-            $.notify("note Added Successfully", {"status":"success"});
+                        //Get LAng
+                        var my_lang = sessionStorage.getItem("lang");
+                        if(my_lang=="HE"){
+                        $.notify("רשומה התווספה בהצלחה", {"status":"success"}); 
+                        }
+                        else{
+                            $.notify("Medical Note Added Successfully", {"status":"success"});
+                        } 
+
+           
             table.destroy();
             $('#datatable4 tbody').empty(); // empty in case the columns change
             getMedicalNote()
@@ -83,7 +92,15 @@ $(document).ready(function () {
         }
 
         $.ajax(settings).done(function (response) {
-            $.notify("Medical Note Updated Successfully", {"status":"success"});
+                                    //Get LAng
+                                    var my_lang = sessionStorage.getItem("lang");
+                                    if(my_lang=="HE"){
+                                    $.notify("רשומה התווספה בהצלחה", {"status":"success"}); 
+                                    }
+                                    else{
+                                        $.notify("Medical Note Added Successfully", {"status":"success"});
+                                    } 
+                                    
             $('.modal.in').modal('hide')
             table.destroy();
             $('#datatable4 tbody').empty(); // empty in case the columns change

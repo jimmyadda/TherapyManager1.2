@@ -20,8 +20,9 @@
             var translated_text  = translate_Json[tolanguage][obj_key]
             if(translated_text){
             $(obj).text(translated_text);
-            }
             if(objType=="INPUT"){$(obj).val(translated_text);}
+            }
+            
 
             //Load css for to lang        
             $(obj).removeClass(fromlanguage);
