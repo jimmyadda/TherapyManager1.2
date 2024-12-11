@@ -30,7 +30,7 @@ $(document).ready(function () {
             table.destroy();
             $('#datatable4 tbody').empty(); // empty in case the columns change   
                 //send mail 
-                if(patien_mail!=" "){
+          if(patien_mail!=" "){
             let f = new FormData();
             f.append("id",data.pat_id)
             f.append("doc_id",data.doc_id)

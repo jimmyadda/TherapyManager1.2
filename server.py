@@ -360,6 +360,7 @@ def send_appointment(notification=''):
     subject = "פגישת טיפול עם  : " + doc_fullname
     sender_email= str(mail_settings['MAIL_USERNAME'])
     receiver_email = pat_email
+    
     #Build Msg
     # Email content
     Portal_url = request.host_url + f"/clients/client_login"
@@ -726,7 +727,6 @@ def postmsg():
         msg="בקשתך לטיפול בתאריך : {app_date}  לא אושרה יש לבקש תאריך נוסף, יום נפלא".format(app_date=app_date)
         now = datetime.datetime.now().strftime("%Y-%m-%d")
         sql = f"INSERT into messages (pat_id,create_date,message,app_id) VALUES  ('{pat_id}','{now}','{msg}','{app_id}');"
-        print("sql",sql)
         ok = database_write(sql,data)
         print('msg sent!',ok)
         return redirect(f"/appointment")  
