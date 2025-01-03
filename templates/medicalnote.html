@@ -87,7 +87,16 @@
         <option value="6">6</option>
         <option value="7">7</option>
     </select>
-
+    <br>
+<h4 key="newtypetitle" class="translate EN">Manage Appointment Types</h4>
+<input class="translate EN" type="text" id="newTypeName" placeholder="New Type Name">
+<button key="addtype" class="translate EN" id="addType" >Add Type</button>
+<br>
+    <select class="translate EN" id="appointmentType">
+    </select>
+    <span> &nbsp;&nbsp;</span>
+    <button  key="saveTemplate" id="saveTemplate" class="translate EN">Save Template</button>
+<button key="LoadTemplate"  id="loadTemplate" class="translate EN">Load Template</button>
 </div>
 
 {% if session['textineditor'] %}
@@ -194,8 +203,98 @@
         const urlParams = new URLSearchParams(queryString);
         const id = urlParams.get('id')
         //patient select    
-         getPatient(id);                            
+         getPatient(id);   
+         
+         
+
+
+    //tamplates
+    document.getElementById('loadTemplate').addEventListener('click', async () => {
+        const appointmentType = document.getElementById('appointmentType').value;
+        const response = await fetch(`/api/templates/${appointmentType}`);
+        
+        if (response.ok) {
+            const data = await response.json();
+            document.getElementById('editor').innerHTML = data.template_text[0].tamplate || '';
+            console.log(data.template_text[0].tamplate);
+        } else {
+            alert('Template not found');
+        }
+      
+        //call 
+       //language
+       console.log(my_lang,Translate_jsonData)
+       if(my_lang=="HE"){
+       translate_DOM_element('translate',Translate_jsonData,'EN',my_lang);     
+       }
+       else{
+       translate_DOM_element('translate',Translate_jsonData,'HE',my_lang);  
+       }  
+
     });
+
+document.getElementById('saveTemplate').addEventListener('click', async () => {
+        const appointmentType = document.getElementById('appointmentType').value;
+        const templateText = document.getElementById('editor').innerHTML;
+
+        const response = await fetch('/api/templates', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ appointment_type: appointmentType, template_text: templateText })
+        });
+
+        const result = await response.json();
+        alert(result.message || 'Error saving template');
+    });
+
+        // Fetch templates and populate dropdown
+            async function fetchTemplates() {
+            let response = await fetch('/templates');
+            var templates = await response.json();
+            templates = templates.templates
+            console.log(templates);
+            let select = document.getElementById('appointmentType');
+            templates.forEach(template => {
+                let option = document.createElement('option');
+                option.classList = "translate EN";
+                option.value = template.rec_id;
+                option.textContent = template.appointment_type;
+                select.appendChild(option);
+            });
+        }
+
+            // Add a new type
+            document.getElementById('addType').addEventListener('click', async () =>  {
+                let typeName = document.getElementById('newTypeName').value;
+                if (!typeName) {
+                    alert('Type name cannot be empty');
+                    return;
+                }
+                let response = await fetch('/Addappointment_type', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: typeName })
+                });
+                if (response.ok) {
+                    document.getElementById('newTypeName').value = ''; // Clear input
+                    removeOptions(document.getElementById('appointmentType'))
+                    fetchTemplates();
+                } else {
+                    let error = await response.json();
+                    alert(error.error);
+                }
+            });
+
+        fetchTemplates();
+    });
+
+    function removeOptions(selectElement) {
+        var i, L = selectElement.options.length - 1;
+        for(i = L; i >= 0; i--) {
+            selectElement.remove(i);
+        }
+    }
+
 </script>
 
 
@@ -246,6 +345,10 @@
   </script>
   <script type="text/javascript" src="/static/js/Helpers.js"></script>
 
+
+  <script>
+
+  </script>
 <script src="/static/js/appointment.js"></script>
 <script src="/static/js/disabledatetime.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>

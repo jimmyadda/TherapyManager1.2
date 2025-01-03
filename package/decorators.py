@@ -1,7 +1,10 @@
 from functools import wraps
 import json
 import sqlite3
+from flask import session
 import flask_login
+
+from package.database import DatabaseManager
 
 #Settings
 with open('config.json') as config_file:
@@ -13,24 +16,26 @@ mail_settings = config_data['mail_settings']
 database_filename = str(Globalsetting['database']) #"TherapyManager.db"
 
 def database_write(sql,data=None):
-    connection = sqlite3.connect(database_filename)
-    connection.row_factory = sqlite3.Row
-    db = connection.cursor()
+    client_key = session['client_key']
+    db_manager = DatabaseManager(client_key)
+    conn = db_manager.connect_to_db(client_key)
+    db = conn.cursor()
     row_affected = 0
     if data:
         row_affected = db.execute(sql, data).rowcount
     else:
         row_affected = db.execute(sql).rowcount
-    connection.commit()
+    db.commit()
     db.close()
-    connection.close()
+
 
     return row_affected
 
 def database_read(sql,data=None):
-    connection = sqlite3.connect(database_filename)
-    connection.row_factory = sqlite3.Row
-    db = connection.cursor()
+    client_key = session['client_key']
+    db_manager = DatabaseManager(client_key)
+    conn = db_manager.connect_to_db(client_key)
+    db = conn.cursor()
 
     if data:
          db.execute(sql, data)
@@ -40,7 +45,6 @@ def database_read(sql,data=None):
     rows = [dict(record) for record in records]
 
     db.close()
-    connection.close()
     return rows
 
 

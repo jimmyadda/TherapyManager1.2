@@ -1,6 +1,8 @@
 import datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+import hashlib
+import hmac
 import json
 import sqlite3
 from flask import redirect, request, session
@@ -10,36 +12,68 @@ import os
 import smtplib
 import logging
 
+from package.database import DatabaseManager
+SECRET_KEY = 'AvivimSecretKey'
 
+
+
+def get_Mail_settings(Pclient_key):
+    client_key = Pclient_key
+    db_manager = DatabaseManager(client_key)
+    conn = db_manager.connect_to_db(client_key)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    cursor.execute("SELECT key, value FROM settings")
+    rows = cursor.fetchall()    
+    return {row[0]: row[1] for row in rows}
+
+def update_Mail_setting(key, value):
+    client_key = session['client_key']
+    db_manager = DatabaseManager(client_key)
+    conn = db_manager.connect_to_db(client_key)
+    cursor = conn.cursor()
+    cursor.execute("UPDATE settings SET value = ? WHERE key = ?", (value, key))
+    conn.commit()
+
+# Function to generate the signature
+def generate_signature(pat_id, client_key):
+    data = f"{pat_id}:{client_key}"
+    return hmac.new(SECRET_KEY.encode(), data.encode(), hashlib.sha256).hexdigest()
+    
+def generate_patient_portal_url(base_url, pat_id, client_key):
+    signature = generate_signature(pat_id, client_key)
+    return f"{base_url}?pat_id={pat_id}&client_key={client_key}&signature={signature}"
 
 ###globals
 path = os.getcwd()
 database_filename = "Tasker.db"
 #Mail Settings
-with open('config.json') as config_file:
-    config_data = json.load(config_file)
-mail_settings = config_data['mail_settings']
+#with open('config.json') as config_file:
 
-#functions
+
+#DB functions
 def database_write(sql,data=None):
-    connection = sqlite3.connect(database_filename)
-    connection.row_factory = sqlite3.Row
-    db = connection.cursor()
+    client_key = session['client_key']
+    db_manager = DatabaseManager(client_key)
+    conn = db_manager.connect_to_db(client_key)
+    db = conn.cursor()
+
     row_affected = 0
     if data:
         row_affected = db.execute(sql, data).rowcount
     else:
         row_affected = db.execute(sql).rowcount
-    connection.commit()
+    conn.commit()
     db.close()
-    connection.close()
+    conn.close()
 
     return row_affected
 
 def database_read(sql,data=None):
-    connection = sqlite3.connect(database_filename)
-    connection.row_factory = sqlite3.Row
-    db = connection.cursor()
+    client_key = session['client_key']
+    db_manager = DatabaseManager(client_key)
+    conn = db_manager.connect_to_db(client_key)
+    db = conn.cursor()
 
     if data:
          db.execute(sql, data)
@@ -49,13 +83,15 @@ def database_read(sql,data=None):
     rows = [dict(record) for record in records]
 
     db.close()
-    connection.close()
+    conn.close()
     return rows
 
-
-def send_mail(notification=''):
+def send_mail(notification='',PclineKey=None):
     form = session['formData']
     user = flask_login.current_user.get_dict() 
+    
+    mail_settings = get_Mail_settings(PclineKey)
+
     task_url = request.host_url + f"/main?folderid={form['folderid']}&id={form['id']}"
     assignTo_mail = database_read(f"select email from accounts WHERE name ='{form['assignto']}' order by name;")
     Project_data= database_read(f"select name from folders WHERE id ='{form['folderid']}' order by name;")
@@ -112,25 +148,25 @@ def send_mail(notification=''):
     #Log
     return redirect(f"/main?folderid={form['folderid']}&id={form['id']}")
 
-
 def send_notification(data):
-    form = session['formData']
-    user = flask_login.current_user.get_dict() 
+    form = data
+    notification = "Wellcome to our clinic" 
+    client_key = session['client_key']
+    mail_settings = get_Mail_settings(client_key)
 
     subject="Notification Mail"
-    assignTo_mail = database_read(f"select email from accounts WHERE name ='{form['assignto']}' order by name;")
-    task_url = request.host_url + f"/main?folderid={form['folderid']}&id={form['id']}"
+    assignTo_mail = form['pat_email']
+    #url
+    base_url = request.host_url + "/portal"
+    pat_id = form['pat_id']
+    client_key = form['client_key']
+    patient_url = generate_patient_portal_url(base_url, pat_id, client_key)
+
 
     sender_email= str(mail_settings['MAIL_USERNAME'])
-    receiver_email = str(assignTo_mail[0]['email'])
-    form = session['formData']
-    user = flask_login.current_user.get_dict() 
+    receiver_email = str(assignTo_mail) 
     email_body = '''
-                <b>Subject:</b> {Subject}<br>
-                <b>Reported By:</b> {Reported By}<br>
-                <b>Assigned To:</b> {Assigned To}<br>
-                <b>TaskID:</b> {TaskID}<br>
-                <b>Date Created:</b> {Date Created}<br>
+                <b>Subject:</b> {Subject}<br>                              
                 <br>
                 <b>Note:</b><br>
                 {note}
@@ -138,14 +174,10 @@ def send_notification(data):
     # Email data
     email_data = {
             'Subject': subject,    
-            'Reported By': user['userid'],
-            'Assigned To': form['assignto'],
-            'TaskID': form['id'],
-            'Date Created': form['created'],
-            'note': data
+            'note': notification
             } 
     email_content = email_body.format(**email_data)
-    email_content += f"<br><p><a href={task_url}>Go to Task</a></p>"
+    email_content += f"<br><p><a href={patient_url}>Go to patient page</a></p>"
     # Create MIME message
     message = MIMEMultipart()
     message['From'] = sender_email
@@ -160,5 +192,4 @@ def send_notification(data):
         server.sendmail(sender_email, receiver_email, message.as_string().encode("UTF-8"))
         server.close()
     print('Email sent!')
-    #Log
     return "ok"

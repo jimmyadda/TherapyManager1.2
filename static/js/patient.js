@@ -20,16 +20,17 @@ $(document).ready(function () {
 
         $.ajax(settings).done(function (response) {
             $('.modal.in').modal('hide')
-                                  //Get LAng
-                                  var my_lang = sessionStorage.getItem("lang");
-                                  if(my_lang=="HE"){
-                                  $.notify(" מטופל התווסף בהצלחה", {"status":"success"}); 
-                                  }
-                                  else{
-                                      $.notify("Patient Added Successfully", {"status":"success"});
-                                  } 
+            $.notify("Patient Added Successfully", {"status":"success"});
             table.destroy();
             $('#datatable4 tbody').empty(); // empty in case the columns change
+            //send wellcome mail
+            let f = new FormData();
+            f.append("pat_email",data.pat_email)
+            fetch("/SendNotification",{
+            "method": "POST",
+            "body":f,       
+            }).then(response => response.text()).then(data => {               
+            });
             getPatient()
         });
 
@@ -84,14 +85,7 @@ swal({
 
         $.ajax(settings).done(function (response) {
             $('.modal.in').modal('hide')
-                                              //Get LAng
-                                              var my_lang = sessionStorage.getItem("lang");
-                                              if(my_lang=="HE"){
-                                              $.notify("עודכן בהצלחה", {"status":"success"}); 
-                                              }
-                                              else{
-                                                  $.notify("Patient Updated Successfully", {"status":"success"});
-                                              } 
+            $.notify("Patient Updated Successfully", {"status":"success"});
             table.destroy();
             $('#datatable4 tbody').empty(); // empty in case the columns change
             getPatient()
@@ -113,9 +107,6 @@ swal({
         }
 
         $.ajax(settings).done(function (response) {
-
-
-
             table = $('#datatable4').DataTable({
                 "bDestroy": true,
                 'paging': true, // Table pagination
@@ -167,7 +158,6 @@ swal({
                 var data = table.row($(this).parents('tr')).data();
                 console.log(data)
                 deletePatient(data.pat_id)
-
             });
 
 

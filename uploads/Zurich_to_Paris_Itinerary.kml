@@ -1,0 +1,43 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Family RV Trip: Zurich to Paris</name>
+    <Placemark>
+      <name>Start: Zurich, Switzerland</name>
+      <Point>
+        <coordinates>8.5417,47.3769</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Titisee, Black Forest, Germany</name>
+      <Point>
+        <coordinates>8.1433,47.8993</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Strasbourg, France</name>
+      <Point>
+        <coordinates>7.7521,48.5734</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Reims, France</name>
+      <Point>
+        <coordinates>4.0317,49.2583</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Paris (Accommodation Spot), France</name>
+      <Point>
+        <coordinates>2.3522,48.8566</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Disneyland Paris, France</name>
+      <Point>
+        <coordinates>2.7798,48.8722</coordinates>
+      </Point>
+    </Placemark>
+  </Document>
+</kml>

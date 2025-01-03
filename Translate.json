@@ -46,7 +46,10 @@
         "sendmsg":"שלח הודעה",
         "patid":"מספר",
         "mednotetitle":"רשומות רפואיות",
-        "medrech4":"עדכן רשומה רפואית למטופל"
+        "saveTemplate":"שמור תבנית",
+        "LoadTemplate":"טען תבנית",
+        "addtype":"הוסף סוג מסמך",
+        "newtypetitle" : "סוג מטופלים"
   }
 
 } 

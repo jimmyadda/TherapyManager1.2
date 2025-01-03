@@ -3,7 +3,7 @@ $(document).ready(function () {
     var table
 
     function addAppointment(data) {
-
+        var patien_mail ="";
         var settings = {
             "async": true,
             "crossDomain": true,
@@ -18,6 +18,7 @@ $(document).ready(function () {
             "data": JSON.stringify(data)
         }
         $.ajax(settings).done(function (response) {
+            if(response["pat_mail"]){console.log(response["pat_mail"][0]); patien_mail =response["pat_mail"][0]; }           
                   //Get LAng
                   var my_lang = sessionStorage.getItem("lang");
                   if(my_lang=="HE"){
@@ -29,13 +30,12 @@ $(document).ready(function () {
             $('.modal.in').modal('hide')
             table.destroy();
             $('#datatable4 tbody').empty(); // empty in case the columns change   
-                //send mail 
+                //send mail   
           if(patien_mail!=" "){
             let f = new FormData();
             f.append("id",data.pat_id)
             f.append("doc_id",data.doc_id)
             f.append("appointment_date",data.appointment_date)
-            var patien_mail = document.getElementsByName("pat_email")[0].value
             fetch("/send-mail",{
             "method": "POST",
             "body":f,       
@@ -44,11 +44,11 @@ $(document).ready(function () {
         }
             getAppointment()
         });
+
         if(data.app_id){
             //was pending
             console.log("end of add ",data.app_id);
-            deleteapprovedAppointment(data.app_id);
-            
+            deleteapprovedAppointment(data.app_id);            
         }
     }
 

@@ -153,7 +153,7 @@
                     <div class="form-group">
                         <label key="IDNum" class="col-lg-2 control-label translate EN">Paient id No</label>
                         <div class="col-lg-10">
-                            <input  type="text" name="pat_insurance_no"  class="form-control" placeholder="Insurance No">
+                            <input  type="text" name="pat_insurance_no"  class="form-control" placeholder="ID No">
                         </div>
                     </div>
                 </td>
@@ -395,7 +395,6 @@
                 populate('#maintbl', newdata[0]) 
                     
             $("#addpatient").click(function () {
-                console.log("patientform")
                 $('#myModal').modal().one('shown.bs.modal', function (e) {
                     $("#savethepatient").off("click").on("click", function (e) {
                         var instance = $('#detailform').parsley();
@@ -642,7 +641,7 @@
                 const queryString = window.location.search;
                 const urlParams = new URLSearchParams(queryString);
                 const patienid = urlParams.get('id')
-
+                
                 $('#myModal').modal().one('shown.bs.modal', function (e) {
                     $("#savethepatient").off("click").on("click", function (e) {
                         console.log("inn")

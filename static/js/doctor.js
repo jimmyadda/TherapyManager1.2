@@ -31,7 +31,7 @@ $(document).ready(function () {
             } 
             table.destroy();
             $('#datatable4 tbody').empty(); // empty in case the columns change
-            //getDoctor()
+            getDoctor()
         });
 
     }
@@ -149,7 +149,6 @@ $(document).ready(function () {
             });
             $('#datatable4 tbody').on('click', '.delete-btn', function () {
                 var data = table.row($(this).parents('tr')).data();
-                console.log(data)
                 deleteDoctor(data.doc_id)
 
             });
@@ -191,14 +190,10 @@ $(document).ready(function () {
 
     }
 
-
-
-
     $("#addpatient").click(function () {
-
+        $('#detailform input,textarea').val("")
         $('#myModal').modal().one('shown.bs.modal', function (e) {
             $("#savethepatient").off("click").on("click", function (e) {
-                console.log("inn")
                 var instance = $('#detailform').parsley();
                 instance.validate()
                 if (instance.isValid()) {
