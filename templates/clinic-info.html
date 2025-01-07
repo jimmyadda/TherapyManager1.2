@@ -65,6 +65,39 @@
                 <h3 class="card-title">Update Clinic Information</h3>
             </div>
             <div class="card-body">
+            {% if error %}
+                <p>{{ error }}</p>
+                <form method="POST" action="{{ url_for('get_clinic_info') }}">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Clinic Name</label>
+                        <input type="text" class="form-control" id="name" name="name" value="" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone</label>
+                        <input type="text" class="form-control" id="phone" name="phone" value="" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="website" class="form-label">Website (optional)</label>
+                        <input type="url" class="form-control" id="website" name="website" value="">
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success">Save</button>
+                    </div>
+                </form>
+            {% else %}
                 <form method="POST" action="{{ url_for('get_clinic_info') }}">
                     <div class="mb-3">
                         <label for="name" class="form-label">Clinic Name</label>
@@ -95,6 +128,7 @@
                         <button type="submit" class="btn btn-success">Save</button>
                     </div>
                 </form>
+                {% endif %}
             </div>
         </div>
     </div>

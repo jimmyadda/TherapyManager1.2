@@ -153,7 +153,7 @@ def send_notification(data):
     notification = "Wellcome to our clinic" 
     client_key = session['client_key']
     mail_settings = get_Mail_settings(client_key)
-
+    print(mail_settings)
     subject="Notification Mail"
     assignTo_mail = form['pat_email']
     #url

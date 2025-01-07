@@ -414,7 +414,7 @@ def get_clinic_info():
     clinic_info = {}
     result = database_read("SELECT name, address, phone, email, website FROM clinicinfo LIMIT 1",client_key=client_key)
     if not result:
-         jsonify({"error": "Clinic information not found"}), 404
+        return render_template('clinic-info.html', clinic=None, error="Clinic information not found"), 404
     return render_template('clinic-info.html', clinic=result[0])
 
 @app.route('/admin/clinic-info', methods=['POST'])
