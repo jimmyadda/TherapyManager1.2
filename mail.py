@@ -150,11 +150,57 @@ def send_mail(notification='',PclineKey=None):
 
 def send_notification(data):
     form = data
-    notification = "Wellcome to our clinic" 
+    patient_data = data['patien_data'][0]
+    clinic_data = data['clinic_data'][0]
+
+    print(patient_data['pat_first_name'])
+
+    patientname = patient_data['pat_first_name']
+    clinic_name = clinic_data['name']
+    clinic_add = clinic_data['address']
+    clinic_phone = clinic_data['phone']
+    clinic_mail= clinic_data['email']
+    clinic_website = clinic_data['website']
+
+   #heb Email..
+   
+    notification = '''
+    Dear {patientname},
+
+    Welcome to "{clinic_name}"! We are thrilled to have you join our community of patients.\n 
+    Our team is dedicated to providing you with the highest quality of care in a warm, professional,\n 
+    and friendly environment.\n
+
+    Here is what you can expect from us:\n
+    Personalized Care: We will work with you to meet your unique health needs.\n
+    Experienced Team: Our skilled healthcare providers are here to support you every step of the way.
+    Convenience: Flexible appointment scheduling, online resources, and an easy way to stay in touch with us.\n\n
+
+    Your Next Steps:\n
+
+     * If you have nםt scheduled your first appointment yet, 
+        please call us at [Phone Number] or visit our website at {clinic_website}.\n
+     
+     * Feel free to reach out if you have any questions or need assistance.\n
+
+    \n We are here to help you achieve your health goals. Whether you are visiting for a check-up, 
+    a specific treatment, or ongoing care, we are committed to making your experience comfortable and positive.
+
+    \nThank you for trusting us with your care. We look forward to seeing you soon!
+
+    \nWarm regards,\n\n
+
+    {clinic_name}
+    {clinic_add}
+    {clinic_phone} | {clinic_mail} | {clinic_website}'''.format(patientname=patientname,
+    clinic_name=clinic_name,clinic_website=clinic_website,clinic_add=clinic_add,
+    clinic_phone=clinic_phone,clinic_mail=clinic_mail)
+
+
     client_key = session['client_key']
     mail_settings = get_Mail_settings(client_key)
-    print(mail_settings)
-    subject="Notification Mail"
+
+    subject="Welcome to {clinic_name} , We are Glad to Have You!".format(clinic_name=clinic_name)
     assignTo_mail = form['pat_email']
     #url
     base_url = request.host_url + "/portal"

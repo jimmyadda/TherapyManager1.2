@@ -237,25 +237,26 @@ def login_request():
         
     users = database_read("select * from accounts where userid=:userid",form,client_key=client_key)    
     formid = form['userid']
-    if len(users) == 1: #user name exist, password not checked
-        salt = users[0]['salt']
-        saved_key = users[0]['password']
-        generated_key = hashlib.pbkdf2_hmac('sha256',form['password'].encode('utf-8'),salt.encode('utf-8'),10000).hex()
+    if users :
+        if len(users) == 1: #user name exist, password not checked
+            salt = users[0]['salt']
+            saved_key = users[0]['password']
+            generated_key = hashlib.pbkdf2_hmac('sha256',form['password'].encode('utf-8'),salt.encode('utf-8'),10000).hex()
 
-        if saved_key == generated_key: #password match
-            user = load_user(formid)
-            print("Login", user)
-            logger.info(f"Login successfull - '{formid}'  date: {str(datetime.datetime.now())}")
-            # Store client_key in the session
-            session['client_key'] = user.client_key            
-            flask_login.login_user(user)
-            return redirect('/') 
-        else: #password incorrect
-           logger.info(f"Login Failed - '{formid}'  date: {str(datetime.datetime.now())}")
-           return render_template('/login.html',alert = "Invalid user/password. please try again.") 
-    else: #user name does not exist
-        logger.info(f"Login Failed - '{formid}'  date: {str(datetime.datetime.now())}")
-        return render_template('/login.html',alert = "Invalid user/password. please try again.")
+            if saved_key == generated_key: #password match
+                user = load_user(formid)
+                print("Login", user)
+                logger.info(f"Login successfull - '{formid}'  date: {str(datetime.datetime.now())}")
+                # Store client_key in the session
+                session['client_key'] = user.client_key            
+                flask_login.login_user(user)
+                return redirect('/') 
+            else: #password incorrect
+                logger.info(f"Login Failed - '{formid}'  date: {str(datetime.datetime.now())}")
+                return render_template('/login.html',alert = "Invalid user/password. please try again.") 
+        else: #user name does not exist
+            logger.info(f"Login Failed - '{formid}'  date: {str(datetime.datetime.now())}")
+            return render_template('/login.html',alert = "Invalid user/password. please try again.")
     
 @app.route("/logout")
 @flask_login.login_required
@@ -400,8 +401,12 @@ def Send_mail_Notification():
     data = dict(request.values)
     client_key = session['client_key']
     patien_id = database_read(f"select pat_id from patient WHERE pat_email ='{data['pat_email']}' order by pat_date desc LIMIT 1;",client_key=client_key)
+    patien_data =  database_read(f"select * from patient WHERE pat_email ='{data['pat_email']}' order by pat_date desc LIMIT 1;",client_key=client_key)
+    clinic_data =  database_read(f"select * from clinicinfo LIMIT 1;",client_key=client_key)
     data['client_key'] = client_key
     data['pat_id'] = patien_id[0]['pat_id']
+    data['patien_data'] = patien_data
+    data['clinic_data'] = clinic_data
     send_notification(data)
     return "ok"
 
@@ -962,7 +967,7 @@ def postmsg():
 
 
 #dev 
-app.run(debug=True)
+#app.run(debug=True)
 
 #production  - remark above
 if __name__ == "__main__":
