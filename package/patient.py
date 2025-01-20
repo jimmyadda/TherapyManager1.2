@@ -53,6 +53,7 @@ class Patient(Resource):
         db_manager = DatabaseManager(client_key)
         conn = db_manager.connect_to_db(client_key)
         patient = conn.execute("SELECT * FROM patient WHERE pat_id=?",(id,)).fetchone()
+        print("PatientAPI patid: ",patient)
         return patient
 
     def delete(self,id):

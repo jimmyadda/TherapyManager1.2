@@ -290,6 +290,8 @@ def send_appointment(notification=''):
     app.config.update(mail_settings)
     mail = Mail(app)
     data = dict(request.values)
+    my_lang = data['lang']
+    print(my_lang)    
     pat_data =  database_read(f"select * from patient where pat_id= '{data['id']}';",client_key=client_key)
     doc_id = data['doc_id']
     doc_data =  database_read(f"select * from doctor where doc_id= '{doc_id}';",client_key=client_key)
@@ -299,13 +301,18 @@ def send_appointment(notification=''):
     pat_fullname = pat_data[0]['pat_first_name']+" "+pat_data[0]['pat_last_name']
     doc_address = doc_data[0]['doc_address']
     #gmail_url = add Appointment to calendar
-    subject = "פגישת טיפול עם  : " + doc_fullname
+    if my_lang=='HE':
+        subject = "פגישת טיפול עם  : " + doc_fullname
+    else:
+        subject = "You have appointment with  : " + doc_fullname
     sender_email= str(mail_settings['MAIL_USERNAME'])
     receiver_email = pat_email
     
     #Build Msg
     # Email content
-    Portal_url = request.host_url + f"/clients/client_login"
+    #Portal_url = request.host_url + f"/clients/client_login"
+    base_url = request.host_url + "/portal"
+    Portal_url = generate_patient_portal_url(base_url, pat_id, client_key)
     appointmentDuration = data['appointment_date']
 
     format = "%Y-%m-%dT%H:%M:%S.%fZ"
@@ -314,20 +321,34 @@ def send_appointment(notification=''):
     date_obj = datetime.datetime.strptime(appointmentDuration, Varformat)
     time_change = datetime.timedelta(minutes=75) 
     appointmentEnd = date_obj + time_change 
-     
-    notification = 'נשמח לראותך '
-    email_body = '''
-                <div id='App_mail' style="text-align: right;direction: rtl;" >
-                <b>נושא :</b> {Subject}<br>
-                <b>מטופל :</b> {Patient}<br>
-                <b>תאריך פגישה :</b> {Appointment Date}<br>
-                <br>
-                <b></b><br>
-                {note}
-                </div>
-                <!-- Button code -->
-                ''' 
-            # Email data
+    
+    if my_lang=='HE':
+        notification = 'נשמח לראותך '
+        email_body = '''
+                    <div id='App_mail' style="text-align: right;direction: rtl;" >
+                    <b>נושא :</b> {Subject}<br>
+                    <b>מטופל :</b> {Patient}<br>
+                    <b>תאריך פגישה :</b> {Appointment Date}<br>
+                    <br>
+                    <b></b><br>
+                    {note}
+                    </div>
+                    <!-- Button code -->
+                    ''' 
+    else:
+        notification = 'We will be happy to see you. '
+        email_body = '''
+                    <div id='App_mail' style="text-align: right;direction: rtl;" >
+                    <b>Subject :</b> {Subject}<br>
+                    <b>Patient :</b> {Patient}<br>
+                    <b>Appointment date :</b> {Appointment Date}<br>
+                    <br>
+                    <b></b><br>
+                    {note}
+                    </div>
+                    <!-- Button code -->
+                    ''' 
+    # Email data
     email_data = {
             'Subject': subject,    
             'Patient': pat_fullname,
@@ -341,15 +362,18 @@ def send_appointment(notification=''):
    
 
     # Create MIME message ICS File
-    desc = u'פגישת טיפול'
+    if my_lang=='HE':
+        desc = u'פגישת טיפול'
+    else:
+        desc = u'Therapy session'        
     ics = render_ics(
-            title=u'פגישת טיפול',
+            title=desc,
             description=desc,
             location= doc_address,
             start= date_obj,
             end= appointmentEnd,
             created=None,
-            admin='Karin Adda',
+            admin=sender_email,
             admin_mail=sender_email
         )
     message = MIMEMultipart()    
@@ -446,7 +470,6 @@ def update_clinic_info():
         #Update
         query = f"UPDATE clinicinfo SET name ='{name}',address = '{address}',phone = '{phone}',email = '{email}',website = '{website}' WHERE id = 1"
         updateClinic = database_write(query,data)
-        print(query,updateClinic)
         if updateClinic == 1 :
             flash("Clinic information updated successfully!", "success")
             return render_template('clinic-info.html', clinic=data)
@@ -595,6 +618,7 @@ def doctor_Page():
     return render_template('doctor.html',Translate_data=Translate_data,user=user)
 
 @app.route("/patient", methods=['GET'])
+@flask_login.login_required
 def patient_Page():
     id = request.args.get('id')
     user = flask_login.current_user.get_dict()
@@ -608,6 +632,7 @@ def appointment_Page():
         return render_template('appointment.html',Translate_data=Translate_data,user=user)
 
 @app.route("/patientform", methods=['GET'])
+@flask_login.login_required
 def patient_folder_Load():
     id = request.args.get('id')
     client_key = session['client_key']
@@ -754,6 +779,7 @@ def updatemedicalnote():
             return "ERROR"
 
 @app.route('/templates', methods=['GET'])
+@flask_login.login_required
 def get_templates_options():
     client_key = session['client_key']
     template = database_read(f"select rec_id,appointment_type from recordstamplates;",client_key=client_key)
@@ -761,18 +787,20 @@ def get_templates_options():
     return jsonify({'templates': template})
 
 @app.route('/Addappointment_type', methods=['POST'])
+@flask_login.login_required
 def create_type():
     data = request.json
-    print("/Addappointment_type",data)
-
+    client_key = session['client_key']
     if not data.get('name'):
         return jsonify({"error": "Name is required"}), 400
     new_type = data['name']    
     try:
         sql = f"INSERT into recordstamplates (appointment_type) VALUES  ('{new_type}');"
         ok = database_write(sql,data)
-    except:
-        return jsonify({"error": "Type already exists"}), 400
+        if ok==1:
+            return jsonify({"message": "appointment type created"}), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
     return jsonify({"message": "appointment type created"}), 201
 
 # Load template by appointment type
@@ -793,7 +821,7 @@ def save_template():
     client_key = session['client_key']
     appointment_type = data.get('appointment_type')
     template_text = data.get('template_text')
-    
+    print(appointment_type,template_text)
     if not appointment_type or not template_text:
         return jsonify({'error': 'Missing required fields'}), 400
     
@@ -821,10 +849,13 @@ def message_page():
     if 'app_id' in request.values:
         app_id =  data['app_id']
     if 'mark' in request.values:
+        #Can Close messages only from portal
+        pat_sign = session['client_key_signature']
+        recid = data['rec_id']
         sql = f"update messages SET status=1 where rec_id = '{recid}';"
         ok = database_write(sql,data)
         if ok == 1:
-            return redirect(f"/portal?patid={pat_id}")  
+            return redirect(f"/portal?pat_id={pat_id}&client_key={client_key}&signature={pat_sign}")  
         else:
             return "ERROR"
         
@@ -833,7 +864,7 @@ def message_page():
         pat_messages = database_read(f"select * from messages where pat_id= '{pat_id}' and rec_id = '{recid}';",client_key=client_key)
     else:
         pat_messages = database_read(f"select * from messages where pat_id= '{pat_id}' ;",client_key=client_key)
-        return render_template('message.html',user=user,pat_messages=pat_messages)
+        return render_template('message.html',user=user,pat_messages=pat_messages,pat_id=pat_id)
 
 @app.route("/message" , methods=['POST'])
 @flask_login.login_required
@@ -873,6 +904,10 @@ def generate_signature(pat_id, client_key):
     data = f"{pat_id}:{client_key}"
     return hmac.new(SECRET_KEY.encode(), data.encode(), hashlib.sha256).hexdigest()
 
+def generate_patient_portal_url(base_url, pat_id, client_key):
+    signature = generate_signature(pat_id, client_key)
+    return f"{base_url}?pat_id={pat_id}&client_key={client_key}&signature={signature}"
+
 # Function to validate the signature
 def is_valid_signature(pat_id, client_key, signature):
     expected_signature = generate_signature(pat_id, client_key)
@@ -904,7 +939,6 @@ def get_portal():
     pat_id = request.args.get("pat_id")
     client_key = request.args.get("client_key")
     signature = request.args.get("signature")
-    print(pat_id,client_key,signature)
     appointment_dates= {}
     if not pat_id or not client_key or not signature:
         return jsonify({"error": "Missing required parameters"}), 400
@@ -914,6 +948,7 @@ def get_portal():
         return jsonify({"error": "Invalid signature"}), 403
     #user = flask_login.current_user.get_dict()
     session['client_key'] = client_key 
+    session['client_key_signature'] = signature
     patientdata = database_read(f"select * from patient where pat_id= '{pat_id}';",None,client_key=client_key)
     patientmessages = database_read(f"select * from messages where status = 0 and pat_id= '{pat_id}';",None,client_key=client_key)
     lastappointment = database_read(f"SELECT *  FROM appointment where pat_id='{pat_id}' and appointment_date < DATETIME('now') order by appointment_date desc LIMIT 1;",None,client_key=client_key)
@@ -926,9 +961,20 @@ def get_portal():
     apps = Appointments()
     appointments = apps.getappointmentsbypatient(pat_id)
     allappointments = apps.get()
+    pending_count = len(patientmessages)
     session['patientdata'] = patientdata
-    return render_template('portal.html',patientdata=patientdata,patientmessages=patientmessages,allappointments=allappointments,appointments=appointments,appointment_dates=appointment_dates,patfiles=patfiles,alert="")
+    return render_template('portal.html',patientdata=patientdata,patientmessages=patientmessages,allappointments=allappointments,appointments=appointments,appointment_dates=appointment_dates,patfiles=patfiles,pending_count=pending_count,alert="")
 
+@app.route('/get-message/<int:message_id>', methods=['GET'])
+def get_message(message_id):
+    data = request.values
+    client_key = session['client_key']
+    mymessages = database_read(f"select create_date,message from messages where rec_id = '{message_id}';",client_key=client_key)
+    if mymessages:
+        return jsonify(mymessages)
+    else:
+        return jsonify({"error": "Message not found"}), 404
+    
 
 @app.route("/checkdate",methods=["POST"])
 #@flask_login.login_required
@@ -967,7 +1013,7 @@ def postmsg():
 
 
 #dev 
-#app.run(debug=True)
+app.run(debug=True)
 
 #production  - remark above
 if __name__ == "__main__":

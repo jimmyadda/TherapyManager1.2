@@ -133,17 +133,7 @@ removefolders.forEach(btn => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-    //set selected folder
-    let folders_js = document.getElementsByClassName('folderitem');
-    let folderid = document.querySelector("[name = 'folderid']").value;
-    if(folderid){
-        Array.prototype.forEach.call(folders_js, function(folder) {
-            // Do stuff here
-            if(folderid == folder.id){
-                folder.classList.add("myselectedfolder")
-            }
-        }); 
-    }
+
 
   });
 
@@ -153,10 +143,10 @@ const textArea = document.querySelector('.text-area textarea');
 const notes = document.querySelector('.notes');
 
 // Adding Notes by clocking the Add button.
-addBtn.addEventListener('click',(e)=>{
+/* addBtn.addEventListener('click',(e)=>{
     if(textArea.value === ''){
         alert('Please Enter a note.');
         box.remove();
     }
     newTaskNote();
-});
+}); */

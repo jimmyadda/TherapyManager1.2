@@ -19,13 +19,19 @@ $(document).ready(function () {
         }
 
         $.ajax(settings).done(function (response) {
-            $('.modal.in').modal('hide')
-            $.notify("Patient Added Successfully", {"status":"success"});
+            $('.modal.in').modal('hide');
+            var lang = document.getElementById('lang').value
+            let notif = "Patient Added Successfully"
+            if(lang=="HE"){notif= "מטופל התווסף בהצלחה"}
+            $.notify(notif, {"status":"success"});
+
             table.destroy();
             $('#datatable4 tbody').empty(); // empty in case the columns change
             //send wellcome mail
+            console.log(data)
             let f = new FormData();
             f.append("pat_email",data.pat_email)
+            f.append("lang",data.lang)
             fetch("/SendNotification",{
             "method": "POST",
             "body":f,       
@@ -206,11 +212,13 @@ swal({
 
     }
 
-
-
-
     $("#addpatient").click(function () {
-        $('#detailform input,textarea').val("")
+        $('#detailform input,textarea').val("");
+        var selected_my_lang = sessionStorage.getItem("lang");
+        if(!selected_my_lang){selected_my_lang="EN"}
+        document.getElementById('lang').value = selected_my_lang;
+        
+
         $('#myModal').modal().one('shown.bs.modal', function (e) {
             $("#savethepatient").off("click").on("click", function(e) {
             var instance = $('#detailform').parsley();

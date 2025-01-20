@@ -210,7 +210,8 @@
 
     //tamplates
     document.getElementById('loadTemplate').addEventListener('click', async () => {
-        const appointmentType = document.getElementById('appointmentType').value;
+        const sel = document.getElementById('appointmentType');
+        const appointmentType = sel.options[sel.selectedIndex].text;
         const response = await fetch(`/api/templates/${appointmentType}`);
         
         if (response.ok) {
@@ -222,8 +223,7 @@
         }
       
         //call 
-       //language
-       console.log(my_lang,Translate_jsonData)
+       //language    
        if(my_lang=="HE"){
        translate_DOM_element('translate',Translate_jsonData,'EN',my_lang);     
        }
@@ -234,7 +234,8 @@
     });
 
 document.getElementById('saveTemplate').addEventListener('click', async () => {
-        const appointmentType = document.getElementById('appointmentType').value;
+        const sel = document.getElementById('appointmentType');
+        const appointmentType = sel.options[sel.selectedIndex].text;
         const templateText = document.getElementById('editor').innerHTML;
 
         const response = await fetch('/api/templates', {

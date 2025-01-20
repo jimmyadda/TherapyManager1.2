@@ -35,6 +35,7 @@ $(document).ready(function () {
             let f = new FormData();
             f.append("id",data.pat_id)
             f.append("doc_id",data.doc_id)
+            f.append("lang",my_lang)
             f.append("appointment_date",data.appointment_date)
             fetch("/send-mail",{
             "method": "POST",
@@ -42,7 +43,7 @@ $(document).ready(function () {
             }).then(response => response.text()).then(data => {               
             });
         }
-            getAppointment()
+            getAppointment("datatable4")
         });
 
         if(data.app_id){
@@ -82,7 +83,7 @@ swal({
    swal("Deleted!", "Appointment has been deleted.", "success");
             table.destroy();
             $('#datatable4 tbody').empty(); // empty in case the columns change
-            getAppointment();
+            getAppointment("datatable4");
         });
 
 
@@ -90,7 +91,9 @@ swal({
 
     }
 
-    function getAppointment() {
+    function getAppointment(to_table) {
+        var my_tbl = to_table;
+
         var unavailableHours = [];
         $('#unavailableHours').val(unavailableHours); 
 
@@ -118,9 +121,7 @@ swal({
 
         $('#unavailableHours').val(unavailableHours); 
            
-        
-
-            table = $('#datatable4').DataTable({
+            table = $('#'+my_tbl+'').DataTable({
                 "bDestroy": true,
                 'paging': true, // Table pagination
                 'ordering': true, // Column ordering
@@ -168,8 +169,7 @@ swal({
     }
 
  // PENDING
- 
- 
+
     function getPendingAppointment() {
         var unavailableHours = [];
         var settings = {
@@ -342,14 +342,22 @@ swal({
                     $('#pendingtbl tbody').empty(); // empty in case the columns change
                     location.reload();
                     getPendingAppointment()
-                });
+        });
     }
-
-
-
-    $("#addpatient").click(function () {
-
+    
+    $("#addpatient","#addApp_pat_form").click(function () {
+     
+        const searchParams = new URLSearchParams(window.location.search);
+        patid= searchParams.get('id');
+          if(patid){
+            getPatient(patid);
+          }
+          else{            
+            getPatient();
+          }
+          getDoctor();
     $('#myModal').modal().one('shown.bs.modal', function (e) {
+      
 
     $("#doctor_select").html(doctorSelect)
      $("#patient_select").html(patientSelect)
@@ -360,21 +368,21 @@ swal({
 
 
 
-      $(".form_datetime").datetimepicker({
-         format: 'yyyy-mm-dd hh:ii:00',
-         minuteStep : 60,        
-         startDate: new Date(),
-         initialDate: new Date(),
-         onRenderHour:function(date){
-            if(disabletime.indexOf(formatDate(date)+":"+pad(date.getUTCHours()))>-1)
-              {
-                  return ['disabled'];
-              }
-        }         
-    });
+            $(".form_datetime").datetimepicker({
+                format: 'yyyy-mm-dd hh:ii:00',
+                minuteStep : 60,        
+                startDate: new Date(),
+                initialDate: new Date(),
+                onRenderHour:function(date){
+                    if(disabletime.indexOf(formatDate(date)+":"+pad(date.getUTCHours()))>-1)
+                    {
+                        return ['disabled'];
+                    }
+                }         
+            });
 
             $("#savethepatient").off("click").on("click", function(e) {
-                console.log("appointmentjs")
+                
             var instance = $('#detailform').parsley();
             instance.validate()
              if(instance.isValid()){
@@ -394,8 +402,9 @@ swal({
     })
 
 
- var doctorSelect=""
+ 
  function getDoctor() {
+        var doctorSelect="";
 
         var settings = {
             "async": true,
@@ -408,7 +417,7 @@ swal({
         }
 
         $.ajax(settings).done(function (response) {
-
+         console.log(response);
         for(i=0;i<response.length;i++){
 
         response[i].doc_fullname=response[i].doc_first_name+" "+response[i].doc_last_name
@@ -418,14 +427,22 @@ swal({
 
         })
         }
-var patientSelect=""
 
-  function getPatient() {
+function getPatient(patient_id) {
+  var patientSelect="";
+  let api_url;
+  if (patient_id === undefined) {
+    api_url = "patientapi";
+  } 
+  else{
+    api_url = "patientapi/"+ patient_id;
+  }
+  console.log(api_url);
 
         var settings = {
             "async": true,
             "crossDomain": true,
-            "url": "patientapi",
+            "url": api_url,
             "method": "GET",
             "headers": {
                 "cache-control": "no-cache"
@@ -441,30 +458,10 @@ var patientSelect=""
                 })
         }
 
-
-        // async function checkdate(data){
-        //     //Check Date 
-        //     let f = new FormData();
-        //     f.append("appointmentdate",data.appointment_date)
-        //     f.append("pat_id",data.pat_id)
-        //     console.log('checkdate')
-        //     const response = await fetch("/checkdate",{
-        //     "method": "POST",
-        //     "body":f,       
-        //     })
-        //     const chedatdate = await response.text();
-        //     return chedatdate;
-        // }
-
-        getAppointment();
+        getAppointment("datatable4");
         getPendingAppointment();
 
-getDoctor();
-getPatient();
-
-
-
-
-
+//getDoctor();
+//getPatient();
 
 });

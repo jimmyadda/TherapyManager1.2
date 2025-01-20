@@ -150,10 +150,10 @@ def send_mail(notification='',PclineKey=None):
 
 def send_notification(data):
     form = data
+
     patient_data = data['patien_data'][0]
     clinic_data = data['clinic_data'][0]
-
-    print(patient_data['pat_first_name'])
+    lang = data['lang']
 
     patientname = patient_data['pat_first_name']
     clinic_name = clinic_data['name']
@@ -161,10 +161,37 @@ def send_notification(data):
     clinic_phone = clinic_data['phone']
     clinic_mail= clinic_data['email']
     clinic_website = clinic_data['website']
+    
 
    #heb Email..
-   
-    notification = '''
+    Heb_Notification='''
+    שלום {patientname} ,
+
+ברוכים הבאים ל[שם המרפאה שלכם]! אנו שמחים וגאים לצרף אתכם לקהילת המטופלים שלנו. הצוות שלנו מחויב להעניק לכם את הטיפול האיכותי ביותר בסביבה מקצועית, חמה וידידותית.
+
+הנה מה שתוכלו לצפות מאיתנו:
+
+    טיפול מותאם אישית: אנו נעבוד יחד איתכם כדי לענות על הצרכים הבריאותיים הייחודיים שלכם.
+    צוות מקצועי: צוות המטפלים המיומן שלנו כאן כדי ללוות אתכם בכל שלב בדרך.
+    נוחות מירבית: קביעת תורים גמישה, משאבים מקוונים ותקשורת קלה ונוחה איתנו.
+
+השלבים הבאים עבורכם:
+
+    אם עדיין לא קבעתם את התור הראשון שלכם, נשמח שתתקשרו אלינו למספר {clinic_phone} או תבקרו באתר שלנו בכתובת {clinic_website}.
+    אם יש לכם שאלות או שאתם זקוקים לעזרה, אל תהססו לפנות אלינו.
+
+אנו כאן כדי לעזור לכם להגיע ליעדים הבריאותיים שלכם. בין אם מדובר בבדיקה שגרתית, בטיפול מסוים או במעקב מתמשך, אנו מחויבים להעניק לכם חוויה נוחה וחיובית.
+
+תודה על האמון שנתתם בנו. אנחנו מצפים לראותכם בקרוב!
+
+    {clinic_name}
+    {clinic_add}
+    {clinic_phone} | {clinic_mail} | {clinic_website}'''.format(patientname=patientname,
+    clinic_name=clinic_name,clinic_website=clinic_website,clinic_add=clinic_add,
+    clinic_phone=clinic_phone,clinic_mail=clinic_mail) 
+    
+    
+    Eng_notification = '''
     Dear {patientname},
 
     Welcome to "{clinic_name}"! We are thrilled to have you join our community of patients.\n 
@@ -179,7 +206,7 @@ def send_notification(data):
     Your Next Steps:\n
 
      * If you have nםt scheduled your first appointment yet, 
-        please call us at [Phone Number] or visit our website at {clinic_website}.\n
+        please call us at {clinic_phone} or visit our website at {clinic_website}.\n
      
      * Feel free to reach out if you have any questions or need assistance.\n
 
@@ -195,12 +222,21 @@ def send_notification(data):
     {clinic_phone} | {clinic_mail} | {clinic_website}'''.format(patientname=patientname,
     clinic_name=clinic_name,clinic_website=clinic_website,clinic_add=clinic_add,
     clinic_phone=clinic_phone,clinic_mail=clinic_mail)
-
+    subject = ""
+    Eng_subject="Welcome to {clinic_name} , We are Glad to Have You!".format(clinic_name=clinic_name)
+    Heb_subject ="ברוכים הבאים {clinic_name} , אנו שמחים לקבל אותך!".format(clinic_name=clinic_name)
+    if lang=="HE":
+        notification = Heb_Notification
+        subject=Heb_subject
+    else:
+        notification = Eng_notification
+        subject = Eng_subject
 
     client_key = session['client_key']
     mail_settings = get_Mail_settings(client_key)
 
-    subject="Welcome to {clinic_name} , We are Glad to Have You!".format(clinic_name=clinic_name)
+
+     
     assignTo_mail = form['pat_email']
     #url
     base_url = request.host_url + "/portal"

@@ -2,14 +2,14 @@
 "EN": {
             "AppointmentWidget": "Appointments",
             "PatientWidget": "Patients",
-            "DoctortWidget": "Doctor"
+            "DoctortWidget": "Therapist"
 
 },
 "HE": 
     {
         "AppointmentWidget": "פגישות",
         "PatientWidget": "מטופלים",
-        "DoctortWidget": "רופא",
+        "DoctortWidget": "מטפל",
         "addpatbtn":"הוסף",
         "tbltitle":"מטופלים",
         "savebtn": "שמור",
@@ -22,14 +22,14 @@
         "IDNum":"ת.זהות",
         "lastname":"שם משפחה",
         "firstname":"שם פרטי",
-        "doch4":"רופא",
+        "doch4":"מטפל",
         "adddocbtn":"הוסף",
         "deletebtn":"מחק",
         "patrecbtn":"רשומות רפואיות",
         "editbtn":"ערוך",
         "appdate":"תאריך פגישה",
         "patient":"מטופל",
-        "doctor":"רופא",
+        "Therapist":"מטפל",
         "apph4":"פגישות",
         "calendarbtn":"תצוגת יומן",
         "addappbtn":"הוסף",

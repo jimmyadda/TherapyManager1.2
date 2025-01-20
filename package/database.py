@@ -137,9 +137,9 @@ class DatabaseManager:
             FOREIGN KEY(pat_id) REFERENCES patient(pat_id)
         );
 
-        CREATE TABLE IF NOT EXISTS recordstemplates (
+        CREATE TABLE IF NOT EXISTS recordstamplates (
             rec_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            create_date DATE NOT NULL,
+            appointment_type TEXT,
             template TEXT
         );
                              

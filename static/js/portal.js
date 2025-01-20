@@ -8,8 +8,7 @@ $(document).ready(function () {
 function test(patienid){
 
   $('#myModal').show('show', function() {
-    $("#doctor_select").html(doctorSelect)
-    $("#patient_select").html(patientSelect)    
+  
     $("#patient_select").val(patienid);
 
          //disable datetime
@@ -45,7 +44,6 @@ function test(patienid){
         var available =  checkdate(jsondata).
         then(response => 
           {
-            console.log("response",response);
             if(response=="OK")
             {
               addAppointment(jsondata);
@@ -94,14 +92,14 @@ async function checkdate(data){
   }
   $.ajax(settings).done(function (response) {
    $('#myModal').hide();
-   swal("Appointment Added Successfully!", "success");   
+   swal("Appointment request was submitted Successfully!", "");   
   });
    
 }
 
-var doctorSelect=""
-async function getDoctor() {
 
+async function getDoctor() {
+  var doctorSelect="";
         var settings = {
             "async": true,
             "crossDomain": true,
@@ -113,20 +111,22 @@ async function getDoctor() {
         }
 
         $.ajax(settings).done(function (response) {
-          console.log(response)
         for(i=0;i<response.length;i++){
 
         response[i].doc_fullname=response[i].doc_first_name+" "+response[i].doc_last_name
+        
         doctorSelect +="<option value="+response[i].doc_id+">"+response[i].doc_fullname+"</option>"
         }
 
-
+        $("#doctor_select").html(doctorSelect);
         })
+
+      
         }
-var patientSelect=""
+
 
 async function getPatient(patienid) {
-
+      var patientSelect="";
         var settings = {
             "async": true,
             "crossDomain": true,
@@ -138,23 +138,23 @@ async function getPatient(patienid) {
         }
 
         $.ajax(settings).done(function (response) {
-          console.log(response)
          for(i=0;i<response.length;i++){
           response[i].pat_fullname=response[i].pat_first_name+" "+response[i].pat_last_name
-        patientSelect +="<option value="+response[i].pat_id+">"+response[i].pat_fullname+"</option>"
-        }
-
+          if(response[i].pat_id == patienid){
+            patientSelect +="<option selected value="+response[i].pat_id+">"+response[i].pat_fullname+"</option>"
+          }
+        }          
+        $("#patient_select").html(patientSelect)
                 })
+                
         }
 
 
         $("#addpatient").click(async function () {
           const queryString = window.location.search;
           const urlParams = new URLSearchParams(queryString);
-          const patienid = urlParams.get('patid')
-           
-          const stuff = await getDoctor();
-          console.log("stuff",stuff)
+          const patienid = urlParams.get('pat_id')
+
          await getDoctor();
 
          await getPatient(patienid);

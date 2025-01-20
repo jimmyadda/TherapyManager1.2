@@ -27,7 +27,8 @@
    <link rel="stylesheet" href="static/app/css/bootstrap.css" id="bscss">
    <!-- =============== APP STYLES ===============-->
    <link rel="stylesheet" href="static/app/css/app.css" id="maincss">
-
+   <!-- JQUERY-->
+   <script src="/static/vendor/jquery/dist/jquery.js"></script>
    <style>
       #detailedform label {
          direction:rtl;
@@ -186,6 +187,8 @@
                                  <textarea  name="pat_address" class="form-control" placeholder="Address"></textarea>
                               </div>
                            </div>
+
+                           <input type="hidden" id="lang" name="lang" value= />
                         </form>
 
 
@@ -226,7 +229,10 @@
 
       var my_lang = sessionStorage.getItem("lang");
       var Translate_jsonData = JSON.parse('{{ Translate_data | tojson | safe }}');
-    
+      $(document).ready(function () {
+         var selected_my_lang = sessionStorage.getItem("lang");
+         document.getElementById('lang').value = selected_my_lang;
+      });
     </script>
     <script type="text/javascript" src="/static/js/patient.js"></script>
     <script type="text/javascript" src="/static/js/Helpers.js"></script>

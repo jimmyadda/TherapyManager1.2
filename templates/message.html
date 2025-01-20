@@ -87,7 +87,11 @@ input[type=submit]:hover {
 <script>
 
 $(document).ready(function () {
+  var url_string = window.location; 
+  var url = new URL(url_string);
+  const patientId = url.searchParams.get("patid");
 
+  
 function getPatient() {
 
     var patientSelect="";
@@ -107,8 +111,16 @@ function getPatient() {
          console.log(response);
             for(i=0;i<response.length;i++){
                  response[i].pat_fullname=response[i].pat_first_name+" "+response[i].pat_last_name
-                 patientSelect +="<option value="+response[i].pat_id+">"+response[i].pat_fullname+"</option>"
+                 if (response[i].pat_id == patientId){
+                  patientSelect +="<option selected ='true' value="+response[i].pat_id+">"+response[i].pat_fullname+"</option>"
                  }
+                 else
+                 {
+                  patientSelect +="<option value="+response[i].pat_id+">"+response[i].pat_fullname+"</option>"
+                 }
+                 
+                 
+            }
           console.log(patientSelect);
           $("#patient_select").html(patientSelect);
         });

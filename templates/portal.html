@@ -35,6 +35,98 @@
    .m10{
    margin-left: 10px;
    }
+   #logout_button{
+      cursor: pointer;
+   }
+  .navbtn{
+   float: left;
+   padding: 10px;
+}
+#notification-icon{
+   cursor: pointer;
+}
+.dropdown {
+    position: absolute;
+    top: 40px; /* Adjust so the dropdown appears below the icon */
+    background: white;
+    color: #333;
+    border: 1px solid #ccc;
+    width: 300px; /* Fixed width for the popup */
+    max-height: 300px; /* Limit height, enable scroll for overflow */
+    overflow-y: auto; /* Allow scrolling when content exceeds max height */    
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    z-index: 1000;
+}
+.message-content{ cursor: pointer;}
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    display: none; /* Hidden by default */
+    padding: 20px;
+}
+
+.popup.hidden {
+    display: none;
+}
+
+.popup-content {
+    position: relative;
+}
+/*
+ 
+ .navbar {
+    list-style: none;
+    display: flex;   
+    padding: 10px;
+    margin: 0;
+}
+
+.navbar li {
+    margin-right: 20px;
+    position: relative;
+    display: inline-block;
+}
+
+.navbar a, .notification .icon {
+    text-decoration: none;
+    color: white;
+    position: relative;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: red;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 50%;
+    display: none; 
+}
+
+*/
+
+.dropdown p, .dropdown div {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.dropdown div:last-child {
+    border-bottom: none;
+} 
 
 </style>
 </head>
@@ -59,16 +151,51 @@
              <!-- END navbar header-->
              <!-- START Nav wrapper-->
              <div class="nav-wrapper">
-                <a class="brand-logo"  style="right: 55px;position: absolute;color: white;font-size: 18px; padding: 5px;" href="/myprofile">hey,  {{ patientdata[0]['pat_first_name'] }} {{ patientdata[0]['pat_last_name'] }}
-                   
-                </a>
-                   <span id="logout_button" >
-                   <i class="fa fa-sign-out" style="right: 0;position: absolute;color: white;font-size: 25px; padding: 5px;" aria-hidden="true"></i>
-                </span>
+                <div class="navbar" style="height: 25px;">
+                  <div class="navbtn">
+                        <a class="brand-logo"  style="right: 55px;position: absolute;color: white;font-size: 18px;" href="">hey,  {{ patientdata[0]['pat_first_name'] }} {{ patientdata[0]['pat_last_name'] }}                   
+                        </a>
+                     </div>
+                     <div class="notification navbtn">
+                        <span id="notification-icon" class="icon">
+                            🔔
+                            {% if pending_count > 0 %}
+                            <span id="notification-badge" class="badge">{{ pending_count }}</span>
+                            {% endif %}
+                        </span>
+                        <div id="dropdown-menu" class="dropdown hidden">
+                           {% if patientmessages %}
+                           {% for patmessage in patientmessages %}
+                           <div class="dropdown-item" data-id="{{ patmessage.pat_id }}" >
+                              <span class="message-content" data-id="{{ patmessage.rec_id }}">{{ patmessage.message[:50] }}</span>
+                              <div><a  href="/message?patid={{ patmessage['pat_id'] }}&mark=1&rec_id={{ patmessage['rec_id'] }}" >Mark as read</a> </div>
+                           </div>
+                           {% endfor %}
+                       {% else %}
+                       <p>No messages.</p>
+                       {% endif %}                       
+                        </div>
+                     </div>
+                     <div class="navbtn">
+                        <span id="logout_button" >
+                           <i class="fa fa-sign-out" style="right: 0;position: absolute;color: white;font-size: 25px;" aria-hidden="true"></i>
+                        </span>
+                     </div>
+                </div>
              </div>
              <!-- END Nav wrapper--> 
           </nav>
           <!-- END Top Navbar-->
+<!-- Popup for Full Message -->
+<div id="full-message-popup" class="popup hidden">
+   <div class="popup-content">
+       <span id="close-popup" class="close">&times;</span>
+       <h3>Message Details</h3>
+       <p id="popup-message-text">Loading message content...</p>
+   </div>
+</div>
+
+
        </header>
        <!-- sidebar-->
  
@@ -209,17 +336,17 @@
 
                            {% if loop.first %}
                            <div class="item active">
-                              <div class='patmsg'  style="direction: rtl;" id={{ msg['rec_id'] }}>{{ msg['message'] }}
+                              <div class='patmsg'  style="direction: rtl;" id={{ msg['rec_id'] }}>{{ msg['message'][:50] }}
                                  <p>message date: {{ msg['create_date'] }}</p>
                               </div>
-                              <div><a id="setmsgmark" href="/message?pat_id={{ msg['pat_id'] }}&mark=1&rec_id={{ msg['rec_id'] }}" >Mark as read</a> </div>
+                              <div><a id="setmsgmark" href="/message?patid={{ msg['pat_id'] }}&mark=1&rec_id={{ msg['rec_id'] }}" >Mark as read</a> </div>
                             </div>
                            {%else%}
                            <div class="item ">
-                              <div class='patmsg'  style="direction: rtl;" id={{ msg['rec_id'] }}>{{ msg['message'] }}
+                              <div class='patmsg'  style="direction: rtl;" id={{ msg['rec_id'] }}>{{ msg['message'][:50] }}
                                  <p>message date: {{ msg['create_date'] }}</p>
                               </div>
-                              <div><a id="setmsgmark" href="/message?pat_id={{ msg['pat_id'] }}&mark=1&rec_id={{ msg['rec_id'] }}" >Mark as read</a> </div>
+                              <div><a id="setmsgmark" href="/message?patid={{ msg['pat_id'] }}&mark=1&rec_id={{ msg['rec_id'] }}" >Mark as read</a> </div>
                             </div>
                            {%endif%}
 
@@ -301,7 +428,6 @@
                                        </div>
                                     </div>
                     </div> <!--end of Modal-->
-
        </section>
        <!-- Page footer-->
        <footer>
@@ -339,6 +465,7 @@
 <script src="/static/js/disabledatetime.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script src="https://rawgit.com/AuspeXeu/bootstrap-datetimepicker/master/js/bootstrap-datetimepicker.js"></script>
+    
     <script>
       $( document ).ready(function() {
          const queryString = window.location.search;
@@ -378,14 +505,86 @@
         var unavailableHours = [];        
         var appointment_data = JSON.parse('{{ allappointments | tojson | safe }}'); 
 
-        console.log(appointment_data);
-
         appointment_data.forEach(element => {
          unavailableHours.push(element.appointment_date)
         });
-        console.log(unavailableHours);
-        $('#unavailableHours').val(unavailableHours);
+        $('#unavailableHours').val(unavailableHours); 
+             
+            //messages
+            const notificationIcon = document.getElementById('notification-icon');
+            notificationIcon.addEventListener('click', () => {
+                dropdownMenu.classList.toggle('hidden');
+            });
 
+
+   const dropdownMenu = document.getElementById('dropdown-menu');
+    const popup = document.getElementById('full-message-popup');
+    const popupMessageText = document.getElementById('popup-message-text');
+    const closePopup = document.getElementById('close-popup');
+    var msgitems = document.getElementsByClassName("dropdown-item")[0] 
+    const patid = msgitems.dataset.id 
+
+        // Function to open the popup and display key-value pairs
+        const openPopup = (data,msgtodisplay) => {
+        // Clear previous popup content
+        popupMessageText.innerHTML = "";
+        var msgid = msgtodisplay;
+        // Iterate through the JSON object and create <p> for each key-value pair
+        for (const [key, value] of Object.entries(data[0])) {
+            const paragraph = document.createElement('p');
+            paragraph.textContent = `${key}: ${value}`;
+            popupMessageText.appendChild(paragraph);
+        }
+                    //Mark as read
+                    const markBtn = document.createElement("a");
+                    markBtn.href = "/message?patid="+patid+"&mark=1&rec_id="+msgid
+                    markBtn.textContent = "Mark as read" ;
+                    popupMessageText.appendChild(markBtn);  
+
+        // Show the popup
+            popup.classList.remove('hidden');
+            popup.style.display = 'block';
+            dropdownMenu.classList.toggle('hidden');
+            
+    };
+
+
+    // Open the popup when a message content is clicked
+    dropdownMenu.addEventListener('click', (event) => {
+        if (event.target.classList.contains('message-content')) {
+         const messageId = event.target.dataset.id;
+            //Fetch full message content from the backend
+            fetch(`/get-message/${messageId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                   openPopup(data,messageId);    
+                })
+                .catch((error) => {
+                    console.error('Error fetching message:', error);
+                    popupMessageText.textContent = 'Failed to load message content.';
+                });
+        }
+    });
+
+    // Close the popup
+    closePopup.addEventListener('click', () => {
+        popup.style.display = 'none';
+    });
+
+
+    // Close the popup when clicking outside of it
+    window.addEventListener('click', (event) => {
+        const isOutsideClick = !popup.querySelector('.popup-content').contains(event.target);
+        const isPopupVisible = popup.style.display === 'block';
+
+        if (isOutsideClick && isPopupVisible) {
+            popup.style.display = 'none';
+        }
+    });
+
+    window.setTimeout( function() {
+  window.location.reload();
+}, 60000);
    });
    
    </script>
