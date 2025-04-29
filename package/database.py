@@ -89,7 +89,8 @@ class DatabaseManager:
         CREATE TABLE IF NOT EXISTS accounts (
             userid TEXT PRIMARY KEY,
             password TEXT,
-            salt TEXT,
+            salt TEXT, 
+            phone_number TEXT,
             email TEXT,
             name TEXT,
             client_key TEXT
@@ -187,7 +188,13 @@ class DatabaseManager:
             address TEXT NOT NULL,
             phone TEXT NOT NULL,
             email TEXT NOT NULL,
-            website TEXT NOT NULL);                                                                                                                                    
+            website TEXT NOT NULL);     
+     
+            CREATE TABLE IF NOT EXISTS verification_codes (
+                phone_number TEXT PRIMARY KEY,
+                code TEXT NOT NULL,
+                timestamp REAL NOT NULL
+            )                                                                                                                                                            
         ''')
         conn.commit()
 

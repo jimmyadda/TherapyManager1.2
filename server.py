@@ -33,7 +33,7 @@ from create_account import create_account
 from package.database import DatabaseManager
 from package.Myutils import render_ics
 import json
-
+from package.Auth2fa import send_verification_code,verify_code
 
 app = Flask(__name__)
 
@@ -94,14 +94,13 @@ def load_user(userid):  #or client patid
     user=None
     clientKey = session['client_key']
     users = database_read(f"select * from accounts where userid='{userid}';",client_key=clientKey)
-    client = database_read(f"select * from patient where pat_id='{userid}';")
-    print(users,userid)
-
+    client = database_read(f"select * from patient where pat_id='{userid}';",client_key=clientKey)    
     if len(users)==1:        
         user = User(users[0]['userid'],users[0]['email'],users[0]['name'],users[0]['client_key'])
     if len(client)==1:
         user = ClientUser(client[0]['pat_id'],client[0]['pat_email'],client[0]['pat_first_name'],client[0]['client_key'])
     if user:
+        session['client_key'] = user.client_key
         user.id = userid
         return user
     else:
@@ -130,7 +129,7 @@ def database_write(sql,data=None):
     return row_affected
 
 def database_read(sql,data=None,client_key=None):
-    if data:
+    if data and not client_key:
         if "userid" in data:
             client_key = generate_client_key(data['userid'])
             session['client_key'] =  client_key
@@ -148,7 +147,6 @@ def database_read(sql,data=None,client_key=None):
          db.execute(sql)
     records = db.fetchall()    
     rows = [dict(record) for record in records]
-
     #db.close()
     #connection.close()
     return rows
@@ -233,31 +231,65 @@ def login_page():
 def login_request():    
     form = dict(request.values)
     client_key = generate_client_key(form['userid'])    
-    form['client_key'] = client_key
-        
+    form['client_key'] = client_key          
     users = database_read("select * from accounts where userid=:userid",form,client_key=client_key)    
     formid = form['userid']
     if users :
         if len(users) == 1: #user name exist, password not checked
             salt = users[0]['salt']
             saved_key = users[0]['password']
-            generated_key = hashlib.pbkdf2_hmac('sha256',form['password'].encode('utf-8'),salt.encode('utf-8'),10000).hex()
-
+            generated_key = hashlib.pbkdf2_hmac('sha256',form['password'].encode('utf-8'),salt.encode('utf-8'),10000).hex()            
             if saved_key == generated_key: #password match
+                print("matched")
+                session['client_key'] = client_key 
                 user = load_user(formid)
-                print("Login", user)
+                print("userLoaded",user)
+                # User is authenticated, now move to phone number entry step
+                session['verification_step'] = False
+                session['phone_step'] = True
                 logger.info(f"Login successfull - '{formid}'  date: {str(datetime.datetime.now())}")
                 # Store client_key in the session
-                session['client_key'] = user.client_key            
+                           
                 flask_login.login_user(user)
-                return redirect('/') 
+                return redirect(url_for('login_page'))
+                #return render_template('login.html',alert = "", verification_step=session['verification_step'], phone_step=session['phone_step']) 
+                #return redirect(url_for('login_page'),verification_step=False, phone_step=False)                                 
             else: #password incorrect
                 logger.info(f"Login Failed - '{formid}'  date: {str(datetime.datetime.now())}")
-                return render_template('/login.html',alert = "Invalid user/password. please try again.") 
+                return render_template('/login.html',alert = "Invalid user/password. please try again.", verification_step=False, phone_step=False) 
         else: #user name does not exist
             logger.info(f"Login Failed - '{formid}'  date: {str(datetime.datetime.now())}")
             return render_template('/login.html',alert = "Invalid user/password. please try again.")
+        
+
+@app.route('/enter_phone', methods=['POST'])
+def enter_phone():
+    phone_number = request.form['phone_number']
+    session['phone_number'] = phone_number
     
+    # Send verification code to the phone number
+    send_verification_code(phone_number)
+
+    # Redirect to verification step
+    session['phone_step'] = False
+    session['verification_step'] = True
+    return redirect(url_for('login_page'))
+
+# Route for 2FA verification (User enters verification code)
+@app.route('/verify', methods=['POST'])
+def verify():
+    phone_number = session.get('phone_number')
+    entered_code = request.form['verification_code']
+
+    # Verify the entered code
+    if verify_code(phone_number, entered_code):
+        session['verification_step'] = False  # Reset after successful verification
+        flash("Login successful!", "success")
+        return redirect('/') # Redirect to home page after login
+    else:
+        flash("Incorrect code or expired. Please try again.", "danger")
+        return redirect(url_for('login_page'))
+
 @app.route("/logout")
 @flask_login.login_required
 def logout_page():
