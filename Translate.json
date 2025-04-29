@@ -38,6 +38,7 @@
         "patfullname":"שם מלא",
         "desc":"תיאור",
         "patnotedate":"תאריך",
+        "medrech4":"עדכן רשומות רפואיות",
         "addpatnotebtn":"הוסף רשומה",
         "removefilebtn":"הסר קובץ",
         "viewfilebtn":"הצג קובץ",
@@ -49,7 +50,7 @@
         "saveTemplate":"שמור תבנית",
         "LoadTemplate":"טען תבנית",
         "addtype":"הוסף סוג מסמך",
-        "newtypetitle" : "סוג מטופלים"
+        "newtypetitle" : "סוג רשומה"
   }
 
 } 
