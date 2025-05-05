@@ -11,12 +11,8 @@
             <h1 class="icon-tasker">Therapy Manager</h1>
             {%if alert != ""%}
             <p class="alert">{{alert}}</p>
-            {%endif%}
-             {{session['verification_step']|pprint }}
-            <p>verification_step: {{ session['verification_step'] }}</p>
-            <p>phone_step: {{ phone_step }}</p>
-
-            {% if session['verification_step'] == False %}
+            {%endif%}            
+            {% if session['verification_step'] == 0 %}
             <p>Please login to continue</p>
             <form action="/login" method="POST">
                   <div>
@@ -31,10 +27,8 @@
                     <div class="small">Client Portal Login <a href="/clients/client_login">Log in!</a></div>  -->
                 </div>
             </form>
-            {{ session['phone_step']|pprint }}
-            
-            {% elif session['phone_step'] == True %}
-            {{ session['phone_step']|pprint}}
+            {% endif %}
+            {% if session['phone_step'] == 1 and session['verification_step'] == 0%}
             <!-- 2FA Step: Enter Phone Number -->
             <p>Please enter your phone number for Verification:</p>
             <form action="/enter_phone" method="POST">

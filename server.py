@@ -245,8 +245,8 @@ def login_request():
                 user = load_user(formid)
                 print("userLoaded",user)
                 # User is authenticated, now move to phone number entry step
-                session['verification_step'] = False
-                session['phone_step'] = True
+                session['verification_step'] = 0
+                session['phone_step'] = 1
                 logger.info(f"Login successfull - '{formid}'  date: {str(datetime.datetime.now())}")
                 # Store client_key in the session
                            
@@ -271,8 +271,8 @@ def enter_phone():
     send_verification_code(phone_number)
 
     # Redirect to verification step
-    session['phone_step'] = False
-    session['verification_step'] = True
+    session['phone_step'] = 0
+    session['verification_step'] = 1
     return redirect(url_for('login_page'))
 
 # Route for 2FA verification (User enters verification code)

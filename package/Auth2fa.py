@@ -5,8 +5,7 @@ import time
 
 from package.database import DatabaseManager
 
-
-
+# Initialize the Nexmo client (Vonage)
 client = vonage.Client(key="f1638e9e", secret="olEAxDDpMnlrOf0W")
 sms = vonage.Sms(client)
 
@@ -32,7 +31,7 @@ def send_verification_code(phone_number):
     
     # Send the verification code via SMS using Nexmo
     responseData = sms.send_message({
-        "from": "TherapyManager",
+        "from": "K.A Therapy",
         "to": phone_number,
         "text": f"Your verification code is: {verification_code} it will be valis for the next 5 Minutes",
     })    
