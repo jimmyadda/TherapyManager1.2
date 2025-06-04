@@ -5,6 +5,8 @@ from email.mime.base import MIMEBase
 import hmac
 import pathlib
 from pydoc import text
+import random
+import string
 from bs4 import BeautifulSoup
 import smtplib
 import logging
@@ -33,7 +35,7 @@ from create_account import create_account
 from package.database import DatabaseManager
 from package.Myutils import render_ics
 import json
-from package.Auth2fa import send_verification_code,verify_code
+from package.Auth2fa import store_verification_code,verify_code
 
 app = Flask(__name__)
 
@@ -59,8 +61,16 @@ with open('Translate.json',encoding="utf8") as Translate_file:
 with open('config.json') as config_file:
     config_data = json.load(config_file)
 Globalsetting = config_data['Global'] 
-  
-#mail_settings = config_data['mail_settings'] old version
+
+ # Set up Flask-Mail
+mail_settings = config_data['mail_settings'] 
+app.config['MAIL_SERVER'] = mail_settings['MAIL_SERVER']  # Use your email provider's SMTP server
+app.config['MAIL_PORT'] = mail_settings['MAIL_PORT']
+app.config['MAIL_USE_TLS'] = mail_settings['MAIL_USE_TLS']
+app.config['MAIL_USERNAME'] = mail_settings['MAIL_USERNAME'] 
+app.config['MAIL_PASSWORD'] = mail_settings['MAIL_PASSWORD'] 
+mail = Mail(app) 
+
 
 
 # Initialize DatabaseManager
@@ -178,7 +188,7 @@ def index_page():
         appointments= apps.get()   
         return render_template('/index.html',Translate_data=Translate_data,user=user,appointments=appointments)
     else:
-        return redirect("/login")
+        return render_template("login.html",alert="", verification_step=0, email_step=0)
 
 @app.route("/register", methods=['GET'])
 def registration_page():
@@ -240,51 +250,59 @@ def login_request():
             saved_key = users[0]['password']
             generated_key = hashlib.pbkdf2_hmac('sha256',form['password'].encode('utf-8'),salt.encode('utf-8'),10000).hex()            
             if saved_key == generated_key: #password match
-                print("matched")
+
                 session['client_key'] = client_key 
                 user = load_user(formid)
-                print("userLoaded",user)
+
                 # User is authenticated, now move to phone number entry step
-                session['verification_step'] = False
-                session['phone_step'] = True
+                session['verification_step'] = 0
+                session['email_step'] = 1
+                 
                 logger.info(f"Login successfull - '{formid}'  date: {str(datetime.datetime.now())}")
-                # Store client_key in the session
-                           
+                # Store client_key in the session        
                 flask_login.login_user(user)
-                return redirect(url_for('login_page'))
-                #return render_template('login.html',alert = "", verification_step=session['verification_step'], phone_step=session['phone_step']) 
-                #return redirect(url_for('login_page'),verification_step=False, phone_step=False)                                 
+                return render_template('login.html', alert="Connected.", verification_step=session['verification_step'], email_step=session['email_step'])
+                #return redirect(url_for('login_page')) good
+                #                                 
             else: #password incorrect
                 logger.info(f"Login Failed - '{formid}'  date: {str(datetime.datetime.now())}")
-                return render_template('/login.html',alert = "Invalid user/password. please try again.", verification_step=False, phone_step=False) 
+                return render_template('/login.html',alert = "Invalid user/password. please try again.", verification_step=0, email_step=0) 
         else: #user name does not exist
             logger.info(f"Login Failed - '{formid}'  date: {str(datetime.datetime.now())}")
             return render_template('/login.html',alert = "Invalid user/password. please try again.")
         
 
-@app.route('/enter_phone', methods=['POST'])
-def enter_phone():
-    phone_number = request.form['phone_number']
-    session['phone_number'] = phone_number
+@app.route('/enter_email', methods=['POST'])
+def enter_email():
+    email = request.form['email']
+    session['email'] = email
     
-    # Send verification code to the phone number
-    send_verification_code(phone_number)
+    # Generate a random verification code
+    verification_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
 
-    # Redirect to verification step
-    session['phone_step'] = False
-    session['verification_step'] = True
-    return redirect(url_for('login_page'))
+    # Store the verification code in the database with an expiration time (e.g., 10 minutes from now)
+    expiration_time = datetime.datetime.now() + datetime.timedelta(minutes=10)
+    store_verification_code(session['client_key'], verification_code, expiration_time)
+
+    # Send the verification code email
+    send_verification_code(email, verification_code)
+
+    # Store the code in the session to verify later
+    session['verification_code'] = verification_code
+    session['email_step'] = 0
+    session['verification_step'] = 1
+    return render_template('login.html', alert="", verification_step=session['verification_step'], email_step=session['email_step'])
 
 # Route for 2FA verification (User enters verification code)
 @app.route('/verify', methods=['POST'])
 def verify():
-    phone_number = session.get('phone_number')
     entered_code = request.form['verification_code']
 
     # Verify the entered code
-    if verify_code(phone_number, entered_code):
+    print("entered_code",entered_code)
+    if verify_code(session.get('client_key'), entered_code):
         session['verification_step'] = False  # Reset after successful verification
-        flash("Login successful!", "success")
+        flash("Email verified successfully!", "success")
         return redirect('/') # Redirect to home page after login
     else:
         flash("Incorrect code or expired. Please try again.", "danger")
@@ -1042,6 +1060,22 @@ def postmsg():
         return "No Patient appointment"    
 #endregion
 
+def send_verification_code(email, verification_code):
+    
+    sender_email = app.config['MAIL_USERNAME']
+    print(sender_email)
+    """ Send the verification code to the user's email """
+    msg = Message('Your Verification Code', 
+                  sender=sender_email, 
+                  recipients=[email])
+    msg.body = f'Your verification code is: {verification_code}. it will be valid for the next 5 Minutes.'
+  
+    
+    try:
+        mail.send(msg)
+        print(f"Verification email sent to {email}")
+    except Exception as e:
+        print(f"Failed to send email: {e}")
 
 
 #dev 

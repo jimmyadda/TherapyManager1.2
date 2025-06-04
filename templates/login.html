@@ -12,11 +12,13 @@
             {%if alert != ""%}
             <p class="alert">{{alert}}</p>
             {%endif%}
-             {{session['verification_step']|pprint }}
-            <p>verification_step: {{ session['verification_step'] }}</p>
-            <p>phone_step: {{ phone_step }}</p>
 
-            {% if session['verification_step'] == False %}
+
+        <!-- Debugging: Check if verification_step and email_step are correct -->
+        <p>verification_step: {{ verification_step }}</p>
+        <p>email_step: {{ email_step }}</p>
+
+            {% if verification_step  == 0 and email_step == 0%}
             <p>Please login to continue</p>
             <form action="/login" method="POST">
                   <div>
@@ -31,26 +33,26 @@
                     <div class="small">Client Portal Login <a href="/clients/client_login">Log in!</a></div>  -->
                 </div>
             </form>
-            {{ session['phone_step']|pprint }}
+            {% endif %}  
             
-            {% elif session['phone_step'] == True %}
-            {{ session['phone_step']|pprint}}
-            <!-- 2FA Step: Enter Phone Number -->
-            <p>Please enter your phone number for Verification:</p>
-            <form action="/enter_phone" method="POST">
+            {% if email_step == 1 %}
+            <!-- 2FA Step: Enter MAil Number -->
+            <p>Please enter your email number for Verification:</p>
+            <form action="/enter_email" method="POST">
                 <div>
-                    <input type="text" name="phone_number" placeholder="Phone Number" required/>
-                    <input type="submit" name="submit" value="Submit Phone Number" class="icon-login"/>
+                    <input type="email" name="email" placeholder="Email Address" required/>
+                    <input type="submit" name="submit" value="Submit Email" class="icon-login"/>
                 </div>
             </form>
-            {% else %}
+            {% endif %}  
+
+            {% if email_step == 0 and  verification_step == 1 %}
             <!-- 2FA Step: Verification Code -->
-                         <!-- 2FA Step: Verification Code -->
-            <p>A verification code has been sent to your phone. Please enter it below:</p>
+            <p>A verification code has been sent to your Email. Please enter it below:</p>
             <form action="/verify" method="POST">
                 <div>
                     <input type="text" name="verification_code" placeholder="Enter the verification code" required/>
-                    <input type="hidden" name="phone_number" value="{{ phone_number }}"/>
+                    <input type="hidden" name="email" value="{{ email }}"/>
                     <input type="submit" name="submit" value="Verify" class="icon-login"/>
                 </div>
             </form>

@@ -24,10 +24,10 @@ $(document).ready(function () {
             //Get LAng
             var my_lang = sessionStorage.getItem("lang");
             if(my_lang=="HE"){
-            $.notify("רופא התווסף בהצלחה", {"status":"success"}); 
+            $.notify("מטפל התווסף בהצלחה", {"status":"success"}); 
             }
             else{
-                $.notify("Doctor Added Successfully", {"status":"success"});
+                $.notify("Therapist Added Successfully", {"status":"success"});
             } 
             table.destroy();
             $('#datatable4 tbody').empty(); // empty in case the columns change
@@ -87,10 +87,10 @@ $(document).ready(function () {
                         //Get LAng
                         var my_lang = sessionStorage.getItem("lang");
                         if(my_lang=="HE"){
-                        $.notify("רופא התווסף בהצלחה", {"status":"success"}); 
+                        $.notify("מטפל התווסף בהצלחה", {"status":"success"}); 
                         }
                         else{
-                            $.notify("Doctor Added Successfully", {"status":"success"});
+                            $.notify("Therapist Added Successfully", {"status":"success"});
                         } 
             $('.modal.in').modal('hide')
             table.destroy();
@@ -134,6 +134,9 @@ $(document).ready(function () {
                     },
                     {
                         mData: 'doc_ph_no'
+                    },
+                    {
+                        mData: 'doc_email'
                     },
                     {
                         mRender: function (o) {

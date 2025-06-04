@@ -117,6 +117,7 @@ class DatabaseManager:
             doc_first_name TEXT NOT NULL,
             doc_last_name TEXT NOT NULL,
             doc_ph_no TEXT NOT NULL,
+            doc_email TEXT NOT NULL,
             doc_date DATE DEFAULT (datetime('now','localtime')),
             doc_address TEXT NOT NULL
         );
@@ -190,11 +191,14 @@ class DatabaseManager:
             email TEXT NOT NULL,
             website TEXT NOT NULL);     
      
-            CREATE TABLE IF NOT EXISTS verification_codes (
-                phone_number TEXT PRIMARY KEY,
-                code TEXT NOT NULL,
-                timestamp REAL NOT NULL
-            )                                                                                                                                                            
+            CREATE TABLE verification_codes (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER,
+                code TEXT,
+                expiration_time DATETIME,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(doc_id) REFERENCES doctor(doc_id)
+            );                                                                                                                                                            
         ''')
         conn.commit()
 
